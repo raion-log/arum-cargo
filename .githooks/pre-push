@@ -9,11 +9,25 @@ protected_branches="^(refs/heads/main|refs/heads/dev)$"
 while read local_ref local_sha remote_ref remote_sha; do
   if [[ "$remote_ref" =~ $protected_branches ]]; then
     branch="${remote_ref#refs/heads/}"
+
+    # ARUM_SKIP_PUSH_GUARD=1 로 bypass (CI·에이전트용)
+    if [[ "${ARUM_SKIP_PUSH_GUARD:-0}" == "1" ]]; then
+      echo "⚠️  [pre-push guard] '$branch' 직접 push — ARUM_SKIP_PUSH_GUARD=1 bypass"
+      continue
+    fi
+
     echo ""
     echo "⚠️  [pre-push guard] '$branch' 브랜치에 직접 push 시도"
-    echo "    가이드: feature 브랜치에서 작업 후 GitHub PR로 merge 권장"
+    echo "    가이드: feature 브랜치 → PR 머지 권장"
     echo "    (GitHub Free + Private 조합은 서버측 protection 미지원)"
     echo ""
+
+    # TTY 없으면 자동 차단 (스크립트 실수 방지)
+    if [[ ! -t 0 ]] && [[ ! -r /dev/tty ]]; then
+      echo "    TTY 부재 → 자동 차단. 의도한 push면 ARUM_SKIP_PUSH_GUARD=1 git push ..."
+      exit 1
+    fi
+
     read -p "    정말 진행할까요? [y/N] " -r < /dev/tty
     echo ""
     if [[ ! "$REPLY" =~ ^[Yy]$ ]]; then
