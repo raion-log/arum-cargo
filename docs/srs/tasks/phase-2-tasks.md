@@ -4,7 +4,8 @@
 > **상위 컨텍스트**: [`00-overview.md`](./00-overview.md) 방법론 · [`01-macro-inventory.md`](./01-macro-inventory.md) 전체 인벤토리
 > **베이스라인**: [SRS Rev 1.0](../SRS-001-arum-cargo.md)
 > **Phase 2 DoD 원본**: [PRD 07 §3.2](../../prd/07-roadmap-milestones.md)
-> **작성일**: 2026-04-18 · **Few-Shot 샘플 수**: 7 / 33
+> **작성일**: 2026-04-18 · **Few-Shot 샘플 수**: 17 / 38 (Wave 1: 7 · Wave 2: 10)
+> **Note**: Phase 2 총 Task 수는 실측 38개. Macro inventory 의 claim 33 과 drift 있음 — Rev 1.1 cleanup 대상 (본 파일이 authoritative)
 
 ---
 
@@ -18,12 +19,14 @@ Phase 2 의 33 Task 는 아래 3 블록으로 착수 순서가 정해진다:
 | **B. DB 스키마 + 시드** (가장 큰 선행 Task) | T-DB-001 ~ 019 + T-MOCK-006 + T-API-008 | **1~2주차** — migrations 전체 작성 · RLS · 트리거 · seed |
 | **C. 품질 게이트** (Phase 2 종료 판정용) | T-TEST-001·002·019 + T-NFR-003·012·014 | **2주차 말** — Phase 2 DoD 검증 |
 
-본 파일에서 아래 **Few-Shot 샘플 7개** 를 먼저 완성 (A/B/C 각 블록에서 골고루 선정):
-- **A 블록**: T-INFRA-001 · T-INFRA-005
-- **B 블록**: T-DB-001 · T-DB-014 · T-API-008
-- **C 블록**: T-TEST-001 · T-NFR-014
+본 파일에서 아래 **Few-Shot 샘플 17개** 완성 (Wave 1: 7, Wave 2: 10):
+- **Wave 1 · A 블록**: T-INFRA-001 · T-INFRA-005
+- **Wave 1 · B 블록**: T-DB-001 · T-DB-014 · T-API-008
+- **Wave 1 · C 블록**: T-TEST-001 · T-NFR-014
+- **Wave 2 · A 블록**: T-INFRA-009 · T-INFRA-010 · T-INFRA-002
+- **Wave 2 · B 블록**: T-DB-013 · T-DB-002 · T-DB-003 · T-DB-004 · T-DB-011 · T-DB-018 · T-DB-019
 
-나머지 26 Task 는 동일 템플릿 · 동일 톤으로 다음 세션에서 확장.
+나머지 16 Task 는 동일 템플릿 · 동일 톤으로 다음 세션에서 확장.
 
 ---
 
@@ -610,42 +613,704 @@ assignees: ''
 
 ---
 
-## 1. 나머지 Phase 2 Task 목록 (26개 · 다음 세션 확장 대상)
+## Few-Shot Sample 8 / 17
 
-다음 세션에서 위 7개와 동일 풀버전 템플릿·동일 톤으로 확장할 Phase 2 Task:
+````markdown
+---
+name: Infra Task
+about: SRS Rev 1.0 기반 .env.example 전체 키 정의
+title: "[Infra] T-INFRA-009: .env.example 전체 키 + Phase 배분 주석"
+labels: ['infra', 'phase:2', 'step:4', 'priority:must']
+assignees: ''
+---
 
-### A. 기반 인프라 (10)
-- T-INFRA-002 Tailwind + arum.* + shadcn/ui
+## 🎯 Summary
+- Task ID: T-INFRA-009
+- 기능명: 모든 Phase 2~5 Task 가 참조할 환경 변수의 **키 이름 + 용도 주석** 을 `.env.example` 에 확정.
+- 목적: 프로젝트 SSOT 환경 변수 목록. 신규 Task 가 임의 키 도입 시 본 파일을 먼저 수정하고 PR 리뷰 받도록 강제.
+
+## 🔗 References
+- SRS §6.8 환경 변수 참조 (전체 키 리스트): [`SRS-001#env-vars`](../SRS-001-arum-cargo.md)
+- CLAUDE.md §6 환경 변수: [`CLAUDE.md`](../../../CLAUDE.md)
+- CON-08 (API 키 서버 전용): [`SRS-001#con-08`](../SRS-001-arum-cargo.md)
+
+## ✅ Task Breakdown
+- [ ] 프로젝트 루트 `.env.example` 작성 (값은 placeholder `your-key-here`)
+- [ ] 섹션별 그룹화:
+  - `# [External APIs]` — NAVER_CLIENT_ID/SECRET, WORKNET_API_KEY, SARAMIN_API_KEY
+  - `# [LLM / Translation]` — TRANSLATION_PROVIDER=gemini, GOOGLE_GENERATIVE_AI_API_KEY, (Phase 5.5+) OPENAI_API_KEY, OPENAI_MONTHLY_BUDGET_CAP_USD
+  - `# [Supabase]` — NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY
+  - `# [Email / Loops.so]` — LOOPS_API_KEY, LOOPS_WEBHOOK_SECRET
+  - `# [Cron Protection]` — CRON_SECRET
+  - `# [Vercel Analytics]` — VERCEL_API_TOKEN, VERCEL_TEAM_ID, VERCEL_PROJECT_ID
+  - `# [Admin]` — ADMIN_EMAIL_WHITELIST (쉼표 구분)
+  - `# [Phase 5.5+] (MVP 미사용)` — KAC_SERVICE_KEY, IIAC_SERVICE_KEY
+- [ ] 각 키 뒤 인라인 주석으로 Phase·관련 REQ ID 표기 (예: `# Phase 4 / REQ-FUNC-010`)
+- [ ] `web/.env.local` 은 `.gitignore` 확인 (절대 커밋 금지)
+- [ ] README 에 `.env.local` 생성 가이드 링크 추가
+
+## 📋 Acceptance Criteria
+- **Scenario 1 — 키 완전성**: SRS §6.8 에 선언된 모든 키가 `.env.example` 에 등장 (grep 일치율 100%)
+- **Scenario 2 — 값 placeholder**: 실제 secret 값 포함 0건 (gitleaks CI 통과)
+- **Scenario 3 — 순서 안정**: Phase 2 → Phase 5.5+ 순 그룹 정렬 · 재정렬 diff PR 차단 규약 문서화
+- **Scenario 4 — MVP 필수 vs 옵션 구분**: `OPENAI_*` 는 `# (Phase 5.5+ 옵션)` 주석 · `GOOGLE_GENERATIVE_AI_API_KEY` 는 무주석 필수
+
+## ⚙️ Technical & Non-Functional Constraints
+- **보안**: 실제 값 커밋 금지 (T-NFR-014 gitleaks 가 검증)
+- **일관성**: SRS Rev 1.1 에서 키 추가/제거 시 본 파일 선행 수정 (PRD 단방향 의존과 동일 원칙)
+
+## ✔️ DoD
+- [ ] 모든 AC 충족 + gitleaks CI 통과
+- [ ] `web/.env.local` 실 값으로 로컬 `pnpm dev` 성공 확인 (T-INFRA-005 연계)
+- [ ] CLAUDE.md §6 와 diff 0 (문서 정합성)
+
+## 🔗 Dependencies & Blockers
+- **Depends on**: T-INFRA-001 (프로젝트 구조)
+- **Blocks**: T-INFRA-005 / T-API-* 전체 / T-FEAT-* 전체 (env 참조 기반)
+````
+
+---
+
+## Few-Shot Sample 9 / 17
+
+````markdown
+---
+name: Infra Task
+about: SRS Rev 1.0 기반 ESLint + Prettier + TypeScript strict CI 파이프라인
+title: "[Infra] T-INFRA-010: ESLint + Prettier + TS strict + Husky pre-commit + PR 머지 게이트"
+labels: ['infra', 'phase:2', 'step:4', 'priority:must', 'ci']
+assignees: ''
+---
+
+## 🎯 Summary
+- Task ID: T-INFRA-010
+- 기능명: 코드 품질 자동 게이트 — 로컬 pre-commit + GitHub Actions PR 차단.
+- 목적: 에이전틱 개발에서 AI 생성 코드의 일관성·안전성 자동 검증. PR merge 전 필수 통과.
+
+## 🔗 References
+- SRS C-TEC-023 (ESLint + Prettier + TS strict 필수 · CI 게이트): [`SRS-001#c-tec-023`](../SRS-001-arum-cargo.md)
+- SRS REQ-NF-161 (zod parse 100% + ESLint 규칙): [`SRS-001#req-nf-161`](../SRS-001-arum-cargo.md)
+- SRS REQ-NF-162 (클라이언트 외부 API 직접 fetch 금지 ESLint 규칙): [`SRS-001#req-nf-162`](../SRS-001-arum-cargo.md)
+
+## ✅ Task Breakdown
+- [ ] `web/.eslintrc.json` — `next/core-web-vitals` + `@typescript-eslint/strict` + `eslint-plugin-tailwindcss` + custom rule: client 파일에서 `@/lib/supabase/admin` import 금지
+- [ ] `web/.prettierrc` — `{ "singleQuote": true, "semi": false, "printWidth": 100 }` (또는 프로젝트 선호)
+- [ ] `web/tsconfig.json` — `strict: true` + `noUncheckedIndexedAccess: true` + `noImplicitOverride: true` + `exactOptionalPropertyTypes: true`
+- [ ] `package.json` scripts: `lint` / `lint:fix` / `typecheck` / `format` / `format:check`
+- [ ] `.github/workflows/ci.yml` — `typecheck` + `lint` + `format:check` + `test` step
+- [ ] Husky + lint-staged (선택) — pre-commit 자동 lint/format
+- [ ] PR status checks required 설정 (GitHub branch protection)
+
+## 📋 Acceptance Criteria
+- **Scenario 1 — 에러 통과 거부**: 고의로 `any` 타입 + 세미콜론 실수 커밋 시도 → CI 실패 → PR merge 차단
+- **Scenario 2 — TailwindCSS classname 정렬**: 무질서 classname 자동 재정렬 (Prettier plugin)
+- **Scenario 3 — 클라 → admin 금지 규칙**: `'use client'` 파일에서 `admin.ts` import 시 ESLint error
+- **Scenario 4 — 포맷 일관성**: 모든 기여자의 diff 가 프로젝트 포맷 규약과 동일
+
+## ⚙️ Technical & Non-Functional Constraints
+- **CI 시간**: ≤ 3분 (lint 1분 + typecheck 1분 + test 1분 내외)
+- **로컬 fallback**: Husky 는 선택 · CI 는 필수
+- **규칙 튜닝**: 과도한 규칙으로 개발 속도 저하 금지 · 3개월마다 재검토
+
+## ✔️ DoD
+- [ ] AC 4종 모두 검증 (fake PR 1회 생성하여 실패 확인)
+- [ ] main · dev 브랜치 GitHub Ruleset 에 `typecheck` · `lint` required status 추가
+- [ ] 기존 `chore` 커밋 전부 CI 통과 상태 유지
+
+## 🔗 Dependencies & Blockers
+- **Depends on**: T-INFRA-001
+- **Blocks**: T-NFR-014 (gitleaks CI 통합 전제) · 모든 후속 PR
+````
+
+---
+
+## Few-Shot Sample 10 / 17
+
+````markdown
+---
+name: Infra Task
+about: SRS Rev 1.0 기반 Tailwind + arum.* tokens + shadcn/ui 초기화
+title: "[Infra] T-INFRA-002: Tailwind + arum.* 토큰 네임스페이스 + shadcn/ui + lucide-react"
+labels: ['infra', 'phase:2', 'step:4', 'priority:must', 'ui']
+assignees: ''
+---
+
+## 🎯 Summary
+- Task ID: T-INFRA-002
+- 기능명: Tailwind config 에 `arum.*` 색상·타이포 토큰 · shadcn/ui CLI 초기화 · lucide-react 아이콘 라이브러리 고정.
+- 목적: 모든 T-UI-* Task 의 디자인 토큰 SSOT. `raion.*` 잔재 금지 (CON-10).
+
+## 🔗 References
+- SRS REQ-FUNC-300 (Tailwind arum.* 네임스페이스): [`SRS-001#req-func-300`](../SRS-001-arum-cargo.md)
+- SRS CON-10 (arum.* only, raion.* 금지): [`SRS-001#con-10`](../SRS-001-arum-cargo.md)
+- SRS C-TEC-002 (Tailwind + shadcn/ui + lucide-react): [`SRS-001#c-tec-002`](../SRS-001-arum-cargo.md)
+- SRS C-TEC-005 (lucide-react 고정): [`SRS-001#c-tec-005`](../SRS-001-arum-cargo.md)
+- PRD 06 §2 디자인 토큰: [`PRD 06`](../../prd/06-ui-ux-spec.md)
+
+## ✅ Task Breakdown
+- [ ] `web/tailwind.config.ts` — `theme.extend.colors.arum`:
+  - `ink` · `navy` · `slate` · `sky` · `blue` · `blob` · `cloud` · `mist` · `fog` · `urgent` · `success` · `pick`
+  - 각 색상 HEX 값은 PRD 06 §2 표 기준
+- [ ] `theme.extend.fontFamily`: `sans: ['Pretendard Variable', ...]`, `display: ['Space Grotesk', ...]`, `mono: ['JetBrains Mono', ...]`
+- [ ] `content` glob: `./src/**/*.{ts,tsx}`
+- [ ] shadcn/ui CLI 초기화: `pnpm dlx shadcn@latest init` · style=default · baseColor=neutral · cssVars=true
+- [ ] 초기 필수 컴포넌트 설치: Button · Card · Badge · Tabs · Dialog · Input · Label · Form · Select · Checkbox · Tooltip · Popover · Separator · Skeleton · Sonner (toast) · Chart
+- [ ] lucide-react 설치 + 샘플 import 확인
+- [ ] `tailwindcss-animate` + `react-intersection-observer` 설치 (T-INFRA-004 prep)
+- [ ] ESLint 규칙 `eslint-plugin-tailwindcss` 로 `raion-*` classname 감지 → error
+
+## 📋 Acceptance Criteria
+- **Scenario 1 — arum.* 렌더**: `<div className="bg-arum-sky text-arum-ink">test</div>` 가 Tailwind 빌드 포함되어 렌더
+- **Scenario 2 — raion.* 차단**: `className="bg-raion-sky"` 사용 시 ESLint error + 빌드 미포함
+- **Scenario 3 — shadcn/ui 컴포넌트 렌더**: `<Button variant="default">` 정상 렌더 · 키보드 포커스 ring 노출
+- **Scenario 4 — 아이콘**: `<Rocket className="h-4 w-4" />` from `lucide-react` 정상 표시
+
+## ⚙️ Technical & Non-Functional Constraints
+- **버전 고정**: `tailwindcss@3.x` · `shadcn@latest (CLI)` · `lucide-react` 최신
+- **다크모드**: `class` 전략 (추후 `/` 랜딩 다크톤 조정 시)
+- **토큰 네임스페이스 단일**: `arum.*` 외 금지 · Heroicons·Material Icons 혼용 금지 (C-TEC-005)
+
+## ✔️ DoD
+- [ ] AC 4종 충족
+- [ ] `pnpm build` 시 Tailwind JIT warning 0
+- [ ] shadcn/ui 컴포넌트 16종 모두 `src/components/ui/` 에 설치
+- [ ] Storybook 없이 `app/_dev/page.tsx` (Phase 2 임시) 에서 컴포넌트 스모크 테스트 가능
+
+## 🔗 Dependencies & Blockers
+- **Depends on**: T-INFRA-001
+- **Blocks**: **T-UI-* 전체** · T-INFRA-004 (Framer Motion 통합) · T-INFRA-013 (SiteHeader/Footer)
+````
+
+---
+
+## Few-Shot Sample 11 / 17
+
+````markdown
+---
+name: DB Task (Enum)
+about: SRS Rev 1.0 기반 Postgres ENUM 3종 마이그레이션
+title: "[DB] T-DB-013: Enum 3종 — news_category, cargo_job_category, editor_pick_tone"
+labels: ['db', 'phase:2', 'step:1', 'priority:must']
+assignees: ''
+---
+
+## 🎯 Summary
+- Task ID: T-DB-013
+- 기능명: 3개 Postgres ENUM 타입 생성 — `news_category` (6) · `cargo_job_category` (7) · `editor_pick_tone` (3).
+- 목적: 모든 테이블 컬럼이 참조하는 타입 선행. T-DB-001·002 의 선결 조건.
+
+## 🔗 References
+- SRS REQ-FUNC-018 (news_category 6): [`SRS-001#req-func-018`](../SRS-001-arum-cargo.md)
+- SRS REQ-FUNC-025 (editor_pick_tone 3): [`SRS-001#req-func-025`](../SRS-001-arum-cargo.md)
+- SRS REQ-FUNC-105 (cargo_job_category 7): [`SRS-001#req-func-105`](../SRS-001-arum-cargo.md)
+- PRD 03 Enum 정의: [`PRD 03`](../../prd/03-data-model.md)
+
+## ✅ Task Breakdown
+- [ ] `supabase/migrations/20260419000002_create_enums.sql` 생성
+- [ ] Enum 3종 DDL:
+```sql
+CREATE TYPE news_category AS ENUM (
+  'cargo-market', 'cargo-ops', 'cargo-company',
+  'cargo-policy', 'airport-cargo', 'big-aviation'
+);
+
+CREATE TYPE cargo_job_category AS ENUM (
+  'sales', 'ops', 'customs', 'imex',
+  'intl_logistics', 'airport_ground', 'other_cargo'
+);
+
+CREATE TYPE editor_pick_tone AS ENUM (
+  'OBSERVATION', 'ACTION_ITEM', 'CONTEXT'
+);
+```
+- [ ] 타임스탬프 파일명 `20260419000002_*.sql` 로 T-DB-001 (`00001_news_articles`) 와 순서 분리
+- [ ] Rollback 고려: `DROP TYPE IF EXISTS ... CASCADE` 별도 `down` 스크립트 (Supabase CLI 관습)
+- [ ] Supabase 타입 자동 생성 스크립트 `db:types` 실행 후 `database.types.ts` 에 enum 반영 확인
+
+## 📋 Acceptance Criteria
+- **Scenario 1 — 생성 성공**: `supabase db reset && supabase db push` 후 `SELECT unnest(enum_range(null::news_category))` 6개 반환
+- **Scenario 2 — 잘못된 값 차단**: `INSERT news_articles (category) VALUES ('invalid-cat')` → invalid_text_representation 에러
+- **Scenario 3 — TypeScript 생성**: `database.types.ts` 에 `news_category: "cargo-market" | "cargo-ops" | ...` union type 존재
+- **Scenario 4 — 추가/변경 Amendment**: 값 추가는 `ALTER TYPE ... ADD VALUE` 로만 (신규 마이그레이션 파일)
+
+## ⚙️ Technical & Non-Functional Constraints
+- **Postgres ENUM 제약**: 값 순서 변경·삭제 불가 (ALTER TYPE ADD 만 가능)
+- **값 확장 규칙**: Amendment 필요 시 새 마이그레이션 파일 · 기존 enum 수정 금지
+- **네이밍**: 언더스코어_스네이크 case · 값은 프로젝트 관습상 하이픈·대문자 혼합 허용 (기존 PRD 03 일치)
+
+## ✔️ DoD
+- [ ] AC 4종 충족
+- [ ] 마이그레이션 적용 후 T-DB-001·T-DB-002 성공 여부 smoke
+- [ ] `database.types.ts` 재생성 커밋
+
+## 🔗 Dependencies & Blockers
+- **Depends on**: T-INFRA-005 (Supabase 프로젝트)
+- **Blocks**: T-DB-001 (news_articles category) · T-DB-002 (job_posts cargo_job_category) · 에디터 Pick 필드 사용 전체
+````
+
+---
+
+## Few-Shot Sample 12 / 17
+
+````markdown
+---
+name: DB Task
+about: SRS Rev 1.0 기반 job_posts 테이블 마이그레이션
+title: "[DB] T-DB-002: job_posts 테이블 + 거부 이유 enum + source_trust_score"
+labels: ['db', 'phase:2', 'step:1', 'priority:must']
+assignees: ''
+---
+
+## 🎯 Summary
+- Task ID: T-DB-002
+- 기능명: 카고 채용 공고 저장 테이블. `cargo_job_category` enum · `job_status` enum · `rejection_reason` enum · `source_trust_score` numeric 포함.
+- 목적: A-Side 전체 기능의 DB 기반.
+
+## 🔗 References
+- SRS REQ-FUNC-105·106·115 (enum/status/reject): [`SRS-001`](../SRS-001-arum-cargo.md)
+- SRS REQ-FUNC-502 (anon SELECT approved only): [`SRS-001#req-func-502`](../SRS-001-arum-cargo.md)
+- SRS REQ-FUNC-104 (source_trust_score 1.0~5.0): [`SRS-001#req-func-104`](../SRS-001-arum-cargo.md)
+- PRD 03 §4.4 job_posts: [`PRD 03`](../../prd/03-data-model.md)
+
+## ✅ Task Breakdown
+- [ ] `supabase/migrations/20260419000003_create_job_posts.sql`
+- [ ] `job_status` enum 신설: `pending` · `approved` · `rejected` · `archived`
+- [ ] `rejection_reason` enum 신설: `non_cargo` · `academy_ad` · `trust_unknown` · `duplicate` · `other`
+- [ ] 컬럼 정의:
+  - `id uuid PK`
+  - `source_name text NOT NULL` (worknet/saramin)
+  - `source_url text UNIQUE NOT NULL`
+  - `title text NOT NULL`
+  - `company_name text NOT NULL`
+  - `summary text CHECK (char_length(summary) BETWEEN 20 AND 500)`
+  - `cargo_category cargo_job_category NOT NULL`
+  - `location text`
+  - `employment_type text`
+  - `years_experience_min int`
+  - `years_experience_max int`
+  - `deadline timestamptz`
+  - `posted_at timestamptz NOT NULL`
+  - `source_trust_score numeric(3,1) NOT NULL DEFAULT 1.0 CHECK (source_trust_score BETWEEN 0 AND 5.0)`
+  - `status job_status NOT NULL DEFAULT 'pending'`
+  - `rejection_reason rejection_reason`
+  - `rejected_at timestamptz`
+  - `approved_at timestamptz`
+  - `dedupe_hash text UNIQUE NOT NULL`
+  - `created_at` / `updated_at` (moddatetime)
+
+## 📋 Acceptance Criteria
+- **Scenario 1 — pending 삽입**: INSERT 정상 (status 기본 'pending')
+- **Scenario 2 — approved 전이 후 비카고 제목**: T-DB-014 트리거가 차단 → exception
+- **Scenario 3 — trust_score 범위**: 5.5 입력 시 CHECK 위반
+- **Scenario 4 — dedupe_hash 중복**: 동일 hash INSERT 시도 → UNIQUE 위반
+- **Scenario 5 — rejection_reason enum**: 'invalid_reason' 입력 시 에러
+
+## ⚙️ Technical & Non-Functional Constraints
+- **트리거 연계**: T-DB-014 `block_non_cargo_titles` 가 본 테이블에서 fire
+- **인덱스**: T-DB-018 에서 `(status, deadline)` · `(cargo_category, status, trust DESC)` 추가
+- **RLS**: T-DB-019 에서 `approved` 만 anon 접근 허용
+
+## ✔️ DoD
+- [ ] AC 5종 충족
+- [ ] T-DB-014 · T-DB-018 · T-DB-019 의 선행 조건으로 성공 적용
+
+## 🔗 Dependencies & Blockers
+- **Depends on**: T-INFRA-005 · T-DB-013 (`cargo_job_category`)
+- **Blocks**: T-DB-014 · T-DB-018 · T-DB-019 · T-FEAT-100-W · T-FEAT-114-W · T-MOCK-002
+````
+
+---
+
+## Few-Shot Sample 13 / 17
+
+````markdown
+---
+name: DB Task
+about: SRS Rev 1.0 기반 subscribers 테이블 + settings_token 생성 default
+title: "[DB] T-DB-003: subscribers 테이블 + 256bit settings_token + 13개월 보존 기반"
+labels: ['db', 'phase:2', 'step:1', 'priority:must', 'legal']
+assignees: ''
+---
+
+## 🎯 Summary
+- Task ID: T-DB-003
+- 기능명: 구독자 계정 테이블. 더블 옵트인 · 수신거부 토큰 · §50 동의 기록 포함.
+- 목적: Email Growth Loop 전체의 저장소.
+
+## 🔗 References
+- SRS REQ-FUNC-503 (anon SELECT 차단 INSERT만): [`SRS-001#req-func-503`](../SRS-001-arum-cargo.md)
+- SRS REQ-FUNC-505 (settings_token 256bit): [`SRS-001#req-func-505`](../SRS-001-arum-cargo.md)
+- SRS CON-04 (consented_at/ip/ua · 13mo): [`SRS-001#con-04`](../SRS-001-arum-cargo.md)
+- PRD 03 §4.1 subscribers: [`PRD 03`](../../prd/03-data-model.md)
+
+## ✅ Task Breakdown
+- [ ] `supabase/migrations/20260419000004_create_subscribers.sql`
+- [ ] `subscriber_status` enum: `pending` · `verified` · `unsubscribed`
+- [ ] 컬럼:
+  - `id uuid PK`
+  - `email citext UNIQUE NOT NULL` (대소문자 무시 비교; `CREATE EXTENSION citext` 선행)
+  - `status subscriber_status NOT NULL DEFAULT 'pending'`
+  - `verification_token text UNIQUE NOT NULL DEFAULT encode(gen_random_bytes(32), 'hex')`
+  - `verification_sent_at timestamptz`
+  - `verified_at timestamptz`
+  - `settings_token text UNIQUE NOT NULL DEFAULT encode(gen_random_bytes(32), 'hex')`
+  - `interest_categories text[] DEFAULT '{}'`
+  - `consented_at timestamptz NOT NULL DEFAULT now()`
+  - `ip inet`
+  - `user_agent text`
+  - `last_active_at timestamptz`
+  - `unsubscribed_at timestamptz`
+  - `referrer_subscriber_id uuid REFERENCES subscribers(id) ON DELETE SET NULL`
+  - `created_at` / `updated_at`
+- [ ] `CREATE EXTENSION IF NOT EXISTS citext` 선행
+- [ ] `CREATE EXTENSION IF NOT EXISTS pgcrypto` (`gen_random_bytes` 용)
+
+## 📋 Acceptance Criteria
+- **Scenario 1 — 기본 INSERT**: email 제공 시 자동으로 verification/settings token 64자 hex 생성
+- **Scenario 2 — email 대소문자 무시**: `Test@Example.com` · `test@example.com` 이 UNIQUE 충돌
+- **Scenario 3 — settings_token 엔트로피**: 2개 row 의 token 이 서로 다름 (통계적 검증)
+- **Scenario 4 — referrer FK**: 존재하지 않는 referrer_id 참조 시 FK 위반
+
+## ⚙️ Technical & Non-Functional Constraints
+- **citext 확장**: DB 레벨에서 email 대소문자 통합 (ILIKE 오버헤드 회피)
+- **pgcrypto**: Supabase 기본 제공 · 확장 없이 `gen_random_bytes` 사용 불가
+- **13mo 보존**: retention cron 미설치 (CON-04 현 단계는 "삭제 금지"만)
+- **RLS**: T-DB-019 에서 anon INSERT 만 허용 · SELECT/UPDATE/DELETE 전부 차단
+
+## ✔️ DoD
+- [ ] AC 4종 충족
+- [ ] citext + pgcrypto 확장 생성 로그 남김
+- [ ] T-FEAT-200-W 더블 옵트인 로직에서 본 테이블 INSERT 성공
+
+## 🔗 Dependencies & Blockers
+- **Depends on**: T-INFRA-005
+- **Blocks**: T-DB-008 · T-DB-009 (FK) · T-DB-019 · T-FEAT-200-W · T-FEAT-201-W
+````
+
+---
+
+## Few-Shot Sample 14 / 17
+
+````markdown
+---
+name: DB Task
+about: SRS Rev 1.0 기반 admin_users 화이트리스트 테이블
+title: "[DB] T-DB-004: admin_users 테이블 + role enum + service_role only RLS"
+labels: ['db', 'phase:2', 'step:1', 'priority:must', 'security']
+assignees: ''
+---
+
+## 🎯 Summary
+- Task ID: T-DB-004
+- 기능명: 관리자 Magic Link 로그인 화이트리스트.
+- 목적: `/admin/*` 접근 제어 + Supabase Auth OTP 전에 이메일 존재 여부 체크.
+
+## 🔗 References
+- SRS REQ-FUNC-400 (admin_users 테이블): [`SRS-001#req-func-400`](../SRS-001-arum-cargo.md)
+- SRS REQ-FUNC-504 (service_role only): [`SRS-001#req-func-504`](../SRS-001-arum-cargo.md)
+- SRS C-TEC-013 (Magic Link + 화이트리스트): [`SRS-001#c-tec-013`](../SRS-001-arum-cargo.md)
+
+## ✅ Task Breakdown
+- [ ] `supabase/migrations/20260419000005_create_admin_users.sql`
+- [ ] `admin_role` enum: `admin` · `editor`
+- [ ] 컬럼:
+  - `id uuid PK`
+  - `email citext UNIQUE NOT NULL`
+  - `role admin_role NOT NULL DEFAULT 'editor'`
+  - `is_active boolean NOT NULL DEFAULT true`
+  - `created_at` / `updated_at`
+- [ ] ADMIN_EMAIL_WHITELIST env 에서 초기 시드 1건 INSERT (예: founder 이메일 · Phase 2 후 수동 입력)
+- [ ] RLS: `ENABLE` · 기본 deny · `service_role` bypass 만 (T-DB-019 에서 일괄 적용)
+
+## 📋 Acceptance Criteria
+- **Scenario 1 — anon 접근 차단**: anon key 로 SELECT → 0 rows / INSERT/UPDATE/DELETE 전부 403
+- **Scenario 2 — service_role 접근**: admin client 로 `SELECT * FROM admin_users` → 전 row 반환
+- **Scenario 3 — role enum 검증**: `INSERT (role) VALUES ('superuser')` → invalid_text_representation
+- **Scenario 4 — 시드 email 존재**: 마이그레이션 후 ADMIN_EMAIL_WHITELIST 의 첫 값이 admin role 로 존재
+
+## ⚙️ Technical & Non-Functional Constraints
+- **service_role 전용**: anon 은 RLS 로 절대 차단 · middleware 에서 Magic Link OTP 는 `service_role` 측 함수로 존재 체크
+- **시드 방식**: migration SQL 에서 `INSERT ... ON CONFLICT (email) DO NOTHING` · env 참조는 `vault` 미사용이면 수동 seed 또는 별도 CLI 명령
+
+## ✔️ DoD
+- [ ] AC 4종 충족
+- [ ] T-FEAT-401-W 구현 시 `/admin/login` 입력 이메일이 본 테이블에 없으면 403 반환 확인
+
+## 🔗 Dependencies & Blockers
+- **Depends on**: T-INFRA-005
+- **Blocks**: T-DB-019 (RLS) · T-FEAT-401-W (Magic Link) · T-FEAT-402-W (middleware)
+````
+
+---
+
+## Few-Shot Sample 15 / 17
+
+````markdown
+---
+name: DB Task (Seed)
+about: SRS Rev 1.0 기반 aviation_glossary 테이블 + 50건 카고 용어 시드
+title: "[DB] T-DB-011: aviation_glossary 테이블 + 50건 카고 용어 seed (AWB·ULD·TAC·Belly 등)"
+labels: ['db', 'phase:2', 'step:1', 'priority:must', 'seed']
+assignees: ''
+---
+
+## 🎯 Summary
+- Task ID: T-DB-011
+- 기능명: `<AviationTerm term="AWB">` 툴팁이 참조할 항공·카고 용어 사전.
+- 목적: P02 해외 영문 장벽 완화 · 현직자 voice 용어 접근성 (P05 Moat 보조).
+
+## 🔗 References
+- SRS REQ-FUNC-030 (50건 시드): [`SRS-001#req-func-030`](../SRS-001-arum-cargo.md)
+- SRS REQ-FUNC-029 (AviationTerm 컴포넌트): [`SRS-001#req-func-029`](../SRS-001-arum-cargo.md)
+- PRD 03 §6.2 + §1.3 Definitions: [`PRD 03`](../../prd/03-data-model.md)
+- references/10-aviation-glossary.md: [`references/10`](../../references/10-aviation-glossary.md)
+
+## ✅ Task Breakdown
+- [ ] `supabase/migrations/20260419000011_create_aviation_glossary.sql`
+- [ ] 컬럼:
+  - `id uuid PK`
+  - `term text UNIQUE NOT NULL` (예: "AWB")
+  - `full_name_en text NOT NULL` ("Air Waybill")
+  - `name_ko text NOT NULL` ("항공화물운송장")
+  - `definition text NOT NULL` (1~2문장 정의)
+  - `example text` (1줄 예시)
+  - `category text` (`document` · `equipment` · `index` · `org` · `role` · `operation`)
+  - `created_at` / `updated_at`
+- [ ] 시드 50건 SQL INSERT — 카고 중심:
+  - **문서**: AWB · HAWB · MAWB · SLI · CI · PL · COO · DG Decl · MSDS · NOC (10)
+  - **장비**: ULD · AKE · AAP · PMC · PAG · PAJ · AKN · RKN · AYF · RAP (10)
+  - **지수/운임**: TAC Index · BAI · WFR · FSC · SSC · GRI · PSS · CW · DW · CGD (10)
+  - **기종/운영**: Freighter · Combi · Belly Cargo · Main Deck · Lower Deck · Widebody · Narrowbody · Pallet · Loose Cargo · Build-up (10)
+  - **조직/역할**: Consolidator (콘솔사) · Forwarder · 3PL · 4PL · NVOCC · IAC · RFS · GHA · CTO · OHFS (10)
+- [ ] 각 용어 definition 은 한국어로 1~2문장 · 11년차 현직자 voice 반영
+- [ ] `category` 컬럼으로 툴팁 스타일 구분 옵션 (향후 UI 분기용)
+
+## 📋 Acceptance Criteria
+- **Scenario 1 — 행 개수**: `SELECT COUNT(*) FROM aviation_glossary` = 50
+- **Scenario 2 — 필수 용어 존재**: `SELECT term FROM aviation_glossary WHERE term IN ('AWB','ULD','TAC Index','Belly Cargo','Consolidator','Forwarder')` 6 rows
+- **Scenario 3 — 중복 방지**: 동일 term 재시드 시 `ON CONFLICT (term) DO NOTHING`
+- **Scenario 4 — 한국어 번역 정확성**: `AWB` → `항공화물운송장` · `ULD` → `단위 적재용기` (사용자 검수)
+
+## ⚙️ Technical & Non-Functional Constraints
+- **사용자 검수 필수**: 11년차 현직자 voice 정합성 확인 후 커밋 (자동 번역 금지)
+- **seed 파일 분리 옵션**: `supabase/seed.sql` 또는 마이그레이션 내장 — Supabase CLI 관습 따름
+- **확장 가능**: 신규 용어 추가는 새 마이그레이션 (DELETE·UPDATE 대신 INSERT)
+
+## ✔️ DoD
+- [ ] AC 4종 충족
+- [ ] 사용자(Founder) term/번역 50건 검수 완료
+- [ ] T-FEAT-031-R (용어 자동 래핑) 의 seed 입력으로 사용 가능
+
+## 🔗 Dependencies & Blockers
+- **Depends on**: T-INFRA-005 · T-DB-013 (category 가 enum 으로 승격 시) — 현재는 text 로 시작
+- **Blocks**: T-FEAT-031-R · T-UI-029 (AviationTerm 컴포넌트 렌더)
+````
+
+---
+
+## Few-Shot Sample 16 / 17
+
+````markdown
+---
+name: DB Task (Indexes)
+about: SRS Rev 1.0 기반 인덱스 일괄 마이그레이션
+title: "[DB] T-DB-018: 인덱스 일괄 — published_at · editor_pick · last_active_at · approved 등 7종"
+labels: ['db', 'phase:2', 'step:1', 'priority:must', 'performance']
+assignees: ''
+---
+
+## 🎯 Summary
+- Task ID: T-DB-018
+- 기능명: 주요 쿼리 p95 성능을 위한 인덱스 일괄 생성.
+- 목적: REQ-NF-008 (뉴스 목록 200ms) · REQ-NF-009 (채용 300ms) · REQ-NF-010 (WAU 100ms) 충족.
+
+## 🔗 References
+- SRS REQ-NF-008 (뉴스 p95 200ms): [`SRS-001#req-nf-008`](../SRS-001-arum-cargo.md)
+- SRS REQ-NF-009 (채용 p95 300ms): [`SRS-001#req-nf-009`](../SRS-001-arum-cargo.md)
+- SRS REQ-NF-010 (WAU p95 100ms): [`SRS-001#req-nf-010`](../SRS-001-arum-cargo.md)
+- PRD 03 §8: [`PRD 03`](../../prd/03-data-model.md)
+
+## ✅ Task Breakdown
+- [ ] `supabase/migrations/20260419000018_indexes.sql`
+- [ ] 인덱스 7종:
+```sql
+-- 뉴스
+CREATE INDEX idx_news_articles_is_published_published_at
+  ON news_articles (is_published, published_at DESC)
+  WHERE is_published = true;
+
+CREATE INDEX idx_news_articles_editor_pick
+  ON news_articles (editor_pick_at DESC)
+  WHERE editor_pick IS NOT NULL;
+
+CREATE INDEX idx_news_articles_category_published
+  ON news_articles (category, published_at DESC)
+  WHERE is_published = true;
+
+-- 채용
+CREATE INDEX idx_job_posts_status_deadline
+  ON job_posts (status, deadline)
+  WHERE status = 'approved';
+
+CREATE INDEX idx_job_posts_category_trust
+  ON job_posts (cargo_category, source_trust_score DESC, deadline)
+  WHERE status = 'approved';
+
+-- 구독자
+CREATE INDEX idx_subscribers_last_active
+  ON subscribers (last_active_at DESC)
+  WHERE status = 'verified';
+
+-- ingest_logs 로테이션
+CREATE INDEX idx_ingest_logs_started_at
+  ON ingest_logs (started_at DESC);
+```
+- [ ] partial index 문법 확인 (WHERE 절 조건부 인덱스) — 저장 공간 절약
+
+## 📋 Acceptance Criteria
+- **Scenario 1 — EXPLAIN ANALYZE 통과**: 10,000 row 시드 후 `SELECT ... FROM news_articles WHERE is_published=true ORDER BY published_at DESC LIMIT 5` → Bitmap Index Scan 사용 · p95 ≤ 200ms
+- **Scenario 2 — 채용 필터**: 100,000 row 시드 + `cargo_category='sales' AND status='approved'` 정렬 → p95 ≤ 300ms
+- **Scenario 3 — WAU**: `COUNT(*) FROM subscribers WHERE status='verified' AND last_active_at >= now() - interval '7 days'` → p95 ≤ 100ms
+- **Scenario 4 — 인덱스 존재**: `\di+` 로 7개 인덱스 모두 확인
+
+## ⚙️ Technical & Non-Functional Constraints
+- **partial index**: WHERE 절로 저장 공간·쓰기 오버헤드 최소화
+- **Supabase Free 500MB**: 인덱스 크기 포함 전체 DB ≤ 500MB 유지 (REQ-NF-121)
+- **시드 필요**: AC 검증은 10k~100k row 시드 후 `ANALYZE` 재계산 필수
+
+## ✔️ DoD
+- [ ] AC 4종 EXPLAIN ANALYZE 로그 첨부 (T-TEST-019 결과)
+- [ ] Supabase 대시보드 DB 사용량 Phase 2 종료 시 ≤ 100MB
+
+## 🔗 Dependencies & Blockers
+- **Depends on**: T-DB-001 · T-DB-002 · T-DB-003 · T-DB-010
+- **Blocks**: T-TEST-019 · T-NFR-003 · Phase 2 성능 게이트
+````
+
+---
+
+## Few-Shot Sample 17 / 17
+
+````markdown
+---
+name: DB Task (RLS)
+about: SRS Rev 1.0 기반 RLS 정책 일괄 적용
+title: "[DB] T-DB-019: RLS 정책 일괄 — 전 테이블 rls:true + 공개 범위 정책 + negative test 준비"
+labels: ['db', 'phase:2', 'step:1', 'priority:must', 'security']
+assignees: ''
+---
+
+## 🎯 Summary
+- Task ID: T-DB-019
+- 기능명: Supabase 모든 테이블 RLS 활성화 + 테이블별 anon/authenticated/service_role 정책 선언.
+- 목적: REQ-FUNC-500~504 보안 요구 일괄 충족. T-TEST-002 negative test 의 선행.
+
+## 🔗 References
+- SRS REQ-FUNC-500 (전 테이블 RLS): [`SRS-001#req-func-500`](../SRS-001-arum-cargo.md)
+- SRS REQ-FUNC-501·502·503·504 (테이블별 정책): [`SRS-001#req-func-501`](../SRS-001-arum-cargo.md)
+- SRS C-TEC-012 (RLS 필수 + Service Role 서버 전용): [`SRS-001#c-tec-012`](../SRS-001-arum-cargo.md)
+
+## ✅ Task Breakdown
+- [ ] `supabase/migrations/20260419000019_rls_policies.sql`
+- [ ] 모든 테이블 RLS 활성:
+```sql
+ALTER TABLE news_articles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE job_posts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE subscribers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE admin_users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE news_clicks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE job_clicks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE daily_digests ENABLE ROW LEVEL SECURITY;
+ALTER TABLE subscription_events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE email_events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ingest_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE aviation_glossary ENABLE ROW LEVEL SECURITY;
+ALTER TABLE cargo_career_links ENABLE ROW LEVEL SECURITY;
+```
+- [ ] 정책 선언:
+```sql
+-- news: anon 은 is_published=true 만
+CREATE POLICY news_read_published ON news_articles
+  FOR SELECT TO anon USING (is_published = true);
+
+-- jobs: anon 은 status='approved' 만
+CREATE POLICY jobs_read_approved ON job_posts
+  FOR SELECT TO anon USING (status = 'approved');
+
+-- subscribers: anon INSERT 만 (구독)
+CREATE POLICY subscribers_insert_anon ON subscribers
+  FOR INSERT TO anon WITH CHECK (true);
+-- SELECT·UPDATE·DELETE 정책 부재 → 전부 deny
+
+-- admin_users: anon 전체 차단 (policy 없음 → RLS deny)
+-- (service_role 는 RLS bypass, 정책 선언 불필요)
+
+-- glossary · career_links: anon SELECT 전체 허용
+CREATE POLICY glossary_read_all ON aviation_glossary
+  FOR SELECT TO anon USING (true);
+CREATE POLICY career_links_read_all ON cargo_career_links
+  FOR SELECT TO anon USING (true);
+
+-- news_clicks · job_clicks: anon INSERT 만 (beacon)
+CREATE POLICY news_clicks_insert ON news_clicks
+  FOR INSERT TO anon WITH CHECK (true);
+CREATE POLICY job_clicks_insert ON job_clicks
+  FOR INSERT TO anon WITH CHECK (true);
+
+-- daily_digests · subscription_events · email_events · ingest_logs:
+--   anon 접근 차단, service_role 만 (정책 부재 → deny)
+```
+
+## 📋 Acceptance Criteria
+- **Scenario 1 — RLS 활성화 전수**: `\dt+` 출력에서 모든 테이블 `rls: true`
+- **Scenario 2 — anon 뉴스 비공개 차단**: `SET role 'anon'; SELECT * FROM news_articles WHERE is_published=false` → 0 rows
+- **Scenario 3 — anon 채용 approved 외 차단**: `status!='approved'` 0 rows
+- **Scenario 4 — admin_users anon 차단**: 어떤 CRUD도 0 rows 또는 403
+- **Scenario 5 — glossary anon 공개**: 50 rows 반환
+- **Scenario 6 — service_role bypass**: admin client 로 모든 테이블 전 row 접근 가능
+
+## ⚙️ Technical & Non-Functional Constraints
+- **RLS 원칙**: "deny by default" — 정책 없으면 anon 차단
+- **service_role**: RLS bypass (Supabase 기본)
+- **authenticated**: 현재 MVP 에서 미사용 (관리자는 service_role 로 API 호출)
+
+## ✔️ DoD
+- [ ] AC 6종 검증 (T-TEST-002 negative test 로 자동화)
+- [ ] Supabase Dashboard → Policies 탭에서 시각 확인
+- [ ] Phase 2 품질 게이트 통과 (보안 기초)
+
+## 🔗 Dependencies & Blockers
+- **Depends on**: T-DB-001 ~ T-DB-012 (모든 테이블 존재)
+- **Blocks**: T-TEST-002 · T-NFR-012 · Phase 2 종료 판정
+
+---
+
+## 1. 나머지 Phase 2 Task 목록 (21개 · 다음 세션 확장 대상)
+
+다음 세션에서 위 17개와 동일 풀버전 템플릿·동일 톤으로 확장할 Phase 2 Task:
+
+### A. 기반 인프라 (7)
 - T-INFRA-003 Pretendard + Space Grotesk + JetBrains Mono 폰트
 - T-INFRA-004 Framer Motion + tailwindcss-animate + react-intersection-observer
 - T-INFRA-006 migrations 네이밍 규약 CI
 - T-INFRA-007 src/lib/supabase + src/lib/api 뼈대 (T-API-008 일부 중첩 — 참조)
 - T-INFRA-008 Vercel 프로젝트 + arumcargo.vercel.app 배포
-- T-INFRA-009 .env.example 전체 키
-- T-INFRA-010 ESLint + Prettier + TS strict CI
 - T-INFRA-013 SiteHeader · SiteFooter 기본 레이아웃
 - T-INFRA-014 next.config.js remotePatterns
 
-### B. DB 스키마 + 시드 (16)
-- T-DB-002 job_posts 테이블
-- T-DB-003 subscribers 테이블
-- T-DB-004 admin_users 테이블
+### B. DB 스키마 + 시드 (10)
 - T-DB-005 news_clicks
 - T-DB-006 job_clicks
 - T-DB-007 daily_digests
 - T-DB-008 subscription_events
 - T-DB-009 email_events
 - T-DB-010 ingest_logs
-- T-DB-011 aviation_glossary + 50건 시드
 - T-DB-012 cargo_career_links + 14건 시드
-- T-DB-013 Enum 3종
 - T-DB-015 log_editor_pick_change 트리거
 - T-DB-016 update_subscriber_last_active 트리거
-- T-DB-018 인덱스 일괄
-- T-DB-019 RLS 정책 일괄
 - T-MOCK-006 aviation_glossary seed JSON (T-DB-011 보조)
 
-### C. 품질 게이트 (추가 Test + NFR)
+### C. 품질 게이트 — 추가 Test + NFR (4)
 - T-TEST-002 RLS negative test suite
 - T-TEST-019 SQL 인덱스 EXPLAIN ANALYZE
 - T-NFR-003 SQL 인덱스 성능 검증
@@ -691,7 +1356,11 @@ assignees: ''
 
 ## Changelog
 
-- **2026-04-18 v1.0**: 최초 작성. Phase 2 의 33 Task 중 Few-Shot 대표 7개 풀 템플릿 샘플로 작성. 나머지 26 Task 는 다음 세션 확장 예정.
+- **2026-04-18 v1.1 (Wave 2)**: Few-Shot 10개 추가 (Sample 8~17). 커버리지 7/33 → 17/33. Wave 2 선정 기준: cross-cutting blocker 영향 + Phase 2 DoD 직접 연결.
+  - A 블록 +3: T-INFRA-009 (env.example) · T-INFRA-010 (ESLint CI) · T-INFRA-002 (Tailwind+arum+shadcn)
+  - B 블록 +7: T-DB-013 (enum) · T-DB-002 (job_posts) · T-DB-003 (subscribers) · T-DB-004 (admin_users) · T-DB-011 (glossary seed) · T-DB-018 (indexes) · T-DB-019 (RLS policies)
+  - 다음 세션에서 남은 16개 확장 예정
+- **2026-04-18 v1.0 (Wave 1)**: 최초 작성. Phase 2 의 33 Task 중 Few-Shot 대표 7개 풀 템플릿 샘플로 작성.
 
 ---
 
