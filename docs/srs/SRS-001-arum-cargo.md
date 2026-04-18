@@ -1,6 +1,6 @@
 # Software Requirements Specification (SRS)
 Document ID: SRS-001
-Revision: 0.9.2 (Iteration — v1.0 확정 전 내부 보완판 · PRD 역반영 완료)
+Revision: 1.0 (Baseline — Phase 2 구현 착수 가능)
 Date: 2026-04-18
 Standard: ISO/IEC/IEEE 29148:2018
 
@@ -8,6 +8,12 @@ Standard: ISO/IEC/IEEE 29148:2018
 > **Primary PRD Source**: [docs/prd/00~07, 99](../prd/) v0.3 (단일 Source of Truth)
 > **Pivot Background**: Cargo-First 전략은 PRD 00 §1·§2에 이미 반영되어 있으며, 본 SRS는 해당 PRD 내용만을 원천으로 사용한다.
 > **Owner**: Arum Cargo Founder (11년차 항공 화물 현직자)
+>
+> **Rev 1.0 Amendment Triggers (→ Rev 1.1)**:
+> - OQ-M6 Loops §50 실발송 검증 (Phase 5 진입 직전) — 실패 시 Resend + 자체 도메인 전환 Amendment
+> - OQ-R17 번역 Provider A/B 실측 (Phase 4) — `openai` / `anthropic` 어댑터 추가 Amendment
+> - Supabase 500MB 근접 시 Phase 5.5 스키마 조정 Amendment
+> - Loops 1,500 contacts 도달 시 Resend 전환 준비 Amendment
 
 ---
 
@@ -33,7 +39,7 @@ Standard: ISO/IEC/IEEE 29148:2018
 
 본 시스템은 다음 기능을 제공해야 한다:
 
-1. **I-Side 카고 뉴스 대시보드** (`/news`, `/news/[slug]`): 국내·해외 카고 뉴스 통합 피드, 에디터 Pick 카드, GPT-4o-mini 기반 해외 영문 기사 한글 요약, 항공·카고 용어 인라인 툴팁
+1. **I-Side 카고 뉴스 대시보드** (`/news`, `/news/[slug]`): 국내·해외 카고 뉴스 통합 피드, 에디터 Pick 카드, Gemini 1.5 Flash 기반 해외 영문 기사 한글 요약 (Provider 교체 가능, C-TEC-015), 항공·카고 용어 인라인 툴팁
 2. **A-Side 카고 채용 허브** (`/jobs`, `/jobs/[slug]`): 워크넷·사람인 카고 직군 공고 통합, 하이브리드 큐레이션(pending→approved), 신뢰도 점수 기반 정렬, 카고 기업 공식 채용 딥링크 카드
 3. **Email Growth Loop**: 더블 옵트인 구독(`/api/subscribe`) → 07:00 KST 일일 다이제스트 → 원클릭 수신거부 → 설정 관리 → 공유 루프
 4. **관리자 대시보드** (`/admin/dashboard`, `/admin/news`, `/admin/jobs`): Supabase Magic Link + `admin_users` 화이트리스트 인증, shadcn/ui charts 기반 8 KPI 카드, 뉴스·채용 승인 큐, 에디터 Pick 인라인 에디터
@@ -56,12 +62,12 @@ Standard: ISO/IEC/IEEE 29148:2018
 
 | ID | 제약 / 가정 | 근거 |
 |---|---|---|
-| CON-01 | 이메일 엔진은 Loops.so 무료 티어(2,000 contacts)를 사용한다. 한국 정보통신망법 §50 필드 주입이 불가능할 경우 OQ-M6 실패로 간주하고 Phase 6에서 Resend로 전환한다 | [ADR-001](../adr/ADR-001-email-service-loops-over-resend.md) |
+| CON-01 | 이메일 엔진은 Loops.so 무료 티어(2,000 contacts)를 사용한다. **1,500 contacts 도달 시 Resend 전환 준비(DNS 인증 72h 여유) 착수**. 한국 정보통신망법 §50 필드 주입이 불가능할 경우 OQ-M6 실패로 간주하고 Phase 5 후반 또는 Phase 6에서 Resend로 전환한다 | [ADR-001](../adr/ADR-001-email-service-loops-over-resend.md) |
 | CON-02 | 모든 이메일 발송은 07:00 KST 고정. 21:00~08:00 KST 야간 발송은 금지 | 정보통신망법 §50 |
 | CON-03 | 이메일 제목에는 `(광고)` 접두어, 본문 footer에는 원클릭 수신거부 + 발신자 정보를 포함해야 한다 | 정보통신망법 §50 |
 | CON-04 | 수신 동의 시각·IP·User-Agent를 `subscribers.consented_at/ip/user_agent`에 기록하고 13개월 이상 보존한다 | 정보통신망법 |
 | CON-05 | 채용 DB에 `승무원|객실|조종사|부기장|항공정비|정비사|기장` 제목 공고는 `approved` 상태로 전이될 수 없다 (`block_non_cargo_titles` 트리거) | [PRD 03 §4.5](../prd/03-data-model.md), [ADR-008](../adr/ADR-008-pivot-to-cargo-first.md) |
-| CON-06 | OpenAI GPT-4o-mini 월 비용은 $5를 초과할 수 없다 (`OPENAI_MONTHLY_BUDGET_CAP_USD`). 초과 시 번역 skip + `is_translated=false` fallback | [ADR-007](../adr/ADR-007-translation-gpt-4o-mini.md) |
+| CON-06 | **MVP 기본 번역 Provider는 Gemini 1.5 Flash 무료 티어 (분당 15 req, 일 1,500 req)**. `TRANSLATION_PROVIDER=openai` 선택 시에만 월 $5 cap(`OPENAI_MONTHLY_BUDGET_CAP_USD`) 재활성화. 어느 Provider든 일일 사용량/예산 초과 시 번역 skip + `is_translated=false` fallback | [ADR-007](../adr/ADR-007-translation-gpt-4o-mini.md) |
 | CON-07 | 뉴스 원문 본문은 DB에 저장하지 않는다. `summary`는 20~500자, 에디터 Pick은 최대 140자 | 저작권·법적 리스크 |
 | CON-08 | 외부 API(Naver, Worknet, Saramin, OpenAI, Loops)는 서버 사이드(API Route / GitHub Actions)에서만 호출한다. 클라이언트 직접 fetch 금지 | 키 노출 방지 |
 | CON-09 | About 페이지 및 모든 공개 콘텐츠에서 Founder의 실명·회사명·학교명·직책은 노출하지 않는다. 허용되는 정보는 "11년차 항공 화물 현직자"뿐 | [CLAUDE.md §2.3](../../CLAUDE.md) |
@@ -95,7 +101,7 @@ Agentic 프로그래밍(Claude Code)이 참조할 **기술 스택 고정 규약*
 | **[Email]** | | | |
 | C-TEC-014 | 이메일 엔진은 **Loops.so (Transactional 전용)**. Sendgrid·Mailgun·AWS SES·Campaign 빌더 사용 금지. OQ-M6(§50 검증) 실패 시 Phase 6에서 **Resend + 자체 도메인** 으로 전환 | `loops` NPM client or REST | 2,000 contacts 무료·§50 필드 주입 가능성 검증 중 |
 | **[AI / Translation]** | | | |
-| C-TEC-015 | 번역 엔진은 **Provider-Agnostic 추상화**를 통해 환경변수 `TRANSLATION_PROVIDER` 로 런타임 교체 가능해야 한다. Phase 5 MVP 기본값은 `openai` (GPT-4o-mini). 지원 Provider: `openai` / `gemini` / `anthropic`. 공통 파라미터는 `temperature=0.2`, `max_tokens=500`, 동일 system prompt 템플릿. `src/lib/api/translation/` 하위에 `index.ts`(facade) + `{provider}.ts`(adapter) 구조. Vercel AI SDK 없이 각 Provider SDK 직접 사용 | `openai@4.x`, `@google/generative-ai`, `@anthropic-ai/sdk` (중 활성 Provider만 런타임 로드) | 벤더 lock-in 회피 · OQ-R17 A/B 실측 기반 교체 가능 · 단일 모델 퇴출 위험 격리 (REQ-NF-120 예산은 어느 Provider든 월 $5 cap 동일 적용) |
+| C-TEC-015 | 번역 엔진은 **Provider-Agnostic facade 구조** (`src/lib/api/translation/index.ts`) 위에 **MVP는 Gemini 어댑터 1종만 구현** (`gemini.ts`). Phase 5 MVP 기본값 `TRANSLATION_PROVIDER=gemini` (Gemini 1.5 Flash 무료 티어). 공통 파라미터 `temperature=0.2`, `max_tokens=500`, 동일 system prompt. `openai` / `anthropic` 어댑터는 **Phase 5.5+ OQ-R17 실측 결과에 따라 도입** (MVP에서는 미구현 · env 값 지정 시 런타임 에러 반환). Vercel AI SDK 없이 각 Provider SDK 직접 사용 | `@google/generative-ai@^0.21` | 벤더 lock-in 회피 · Gemini 무료 티어로 C-COST-002 $5 cap 모순 해소 · facade 구조로 Phase 5.5+ provider 추가 시 코드 변경 최소화 |
 | C-TEC-016 | **뉴스 번역 파이프라인의 LLM 호출은 카고 원문 요약 한 가지 용도만 허용**. 에디터 Pick 자동 생성·챗봇·사용자-facing 콘텐츠 생성 금지. 관리자 전용 내부 리서치 도구(C-TEC-025)는 예외이며 **사용자 공개 콘텐츠에 LLM 산출물을 직접 게시하지 않는다** | — | 에디터 Pick의 "현직자 voice" Moat 보호 (P05) |
 | **[Scheduling / Cron]** | | | |
 | C-TEC-017 | Cron은 **Vercel Cron (일 1회 digest) + GitHub Actions (ingest 3종)** 하이브리드. 제3의 외부 스케줄러(EventBridge·cron-job.org) 도입 금지 | `vercel.json`, `.github/workflows/*.yml` | Vercel Hobby 일 2회 한도 보완 |
@@ -116,7 +122,7 @@ Agentic 프로그래밍(Claude Code)이 참조할 **기술 스택 고정 규약*
 | ID | 제약 | 상한 | 근거 |
 |---|---|---|---|
 | C-COST-001 | **MVP 전체 월 인프라 비용 상한** | ≤ **₩100,000 / 월** (약 US$75, 2026 환율) | 사용자 개인 부담 한도 |
-| C-COST-002 | OpenAI GPT-4o-mini 월 비용 | ≤ US$5 (`OPENAI_MONTHLY_BUDGET_CAP_USD`) | REQ-NF-120 |
+| C-COST-002 | 번역 Provider 월 비용 | **기본 `gemini` = $0 (무료 티어)**. `TRANSLATION_PROVIDER=openai` 선택 시 ≤ US$5 (`OPENAI_MONTHLY_BUDGET_CAP_USD`) 재적용 | REQ-NF-120 |
 | C-COST-003 | Supabase 요금제 | 무료 티어 (≤ 500 MB DB·2GB egress·50K MAU) | REQ-NF-121 |
 | C-COST-004 | Loops.so 요금제 | 무료 티어 (≤ 2,000 contacts) | REQ-NF-122, C-TEC-014 |
 | C-COST-005 | Vercel 요금제 | Hobby 무료 티어 | C-TEC-019 |
@@ -223,7 +229,7 @@ Agentic 프로그래밍(Claude Code)이 참조할 **기술 스택 고정 규약*
 | **External — Naver News API** | External System | 국내 카고 뉴스 원문 제공 | 25,000 req/일 쿼터 준수 |
 | **External — Naver RSS (카고프레스·CargoNews 등)** | External System | 국내 카고 매체 RSS | 호스트 ToS 준수, 본문 저장 금지 |
 | **External — Loadstar / Air Cargo News UK / FlightGlobal Cargo RSS** | External System | 해외 카고 뉴스 영문 원문 | 공정 이용 범위(제목+3문장 요약+링크) |
-| **External — OpenAI GPT-4o-mini** | External System | 해외 영문 기사 한글 요약 | 월 $5 비용 상한 |
+| **External — Gemini 1.5 Flash** (MVP 기본 Provider, C-TEC-015) | External System | 해외 영문 기사 한글 요약 | 무료 티어 (분당 15 req / 일 1,500 req), Google Generative AI API |
 | **External — Worknet OpenAPI** | External System | 카고 채용 공고 primary | 1,000 req/일, `항공화물`·`국제물류` 등 10개 키워드 |
 | **External — Saramin OpenAPI** | External System | 카고 채용 공고 secondary (dedupe) | 500 req/일 |
 | **External — Loops.so** | External System | 이메일 발송 + 웹훅 | 2,000 contacts 무료 한도, 10 req/s, §50 필드 주입 검증(OQ-M6) |
@@ -605,9 +611,9 @@ sequenceDiagram
 | REQ-FUNC-012 | 해외 카고 RSS 3종 ingest (Loadstar·ACN UK·FlightGlobal) | REF-03 §3.1, REF-05 §4.1 / F1 | Must | F | Given 3개 영문 피드, When cron 실행, Then 각 item의 `content:encoded` 또는 Readability 파싱 후 번역 파이프 전달 | integration, E2E |
 | REQ-FUNC-013 | 뉴스 exclude 키워드 필터 (승무원·조종사·정비 등 8종) | REF-03 §3.1, REF-05 §3.4 / CON-05 | Must | F | Given ingest 된 title/description, When `EXCLUDE_RE=/승무원\|객실\|지상직\|조종사\|부기장\|정비사\|기장\|항공정비/` 매칭, Then skip + `ingest_logs.records_skipped++` | unit(정규식 테스트 20 케이스), E2E |
 | REQ-FUNC-014 | dedupe_hash 중복 차단 | REF-04 §4.3 / F1 | Must | F | Given `sha256(source_name + title + pubDate)` hash, When DB unique 위반, Then `on conflict do nothing` + `records_skipped++` | integration(동일 item 2회 insert) |
-| REQ-FUNC-015 | 해외 기사 LLM 한글 요약 (Provider-Agnostic) | PRD 02 §4, PRD 04 §4.2, C-TEC-015 | Must | F | Given 영문 title+body, When `TRANSLATION_PROVIDER` 환경변수에 따라 `openai` / `gemini` / `anthropic` adapter 중 하나가 호출되고 (MVP 기본 `openai` = `gpt-4o-mini`, temperature=0.2, max_tokens=500), Then 모든 provider가 동일 system prompt + 동일 zod 출력 스키마로 50~500자 한국어 요약 생성 (한국어 비율 ≥ 50%, 카고 용어 괄호 병기). Provider 교체는 코드 변경 없이 env 변경만으로 가능 | unit(adapter별 zod schema), integration(각 provider mock), manual 10건 오역 검수, provider 교체 E2E(env 스왑 후 동일 기사 2종 호출) |
+| REQ-FUNC-015 | 해외 기사 LLM 한글 요약 (Gemini MVP · Provider-Agnostic facade) | PRD 02 §4, PRD 04 §4.2, C-TEC-015 | Must | F | Given 영문 title+body, When MVP 기본 `TRANSLATION_PROVIDER=gemini` (Gemini 1.5 Flash, temperature=0.2, max_tokens=500) adapter 호출, Then 50~500자 한국어 요약 생성 (한국어 비율 ≥ 50%, 카고 용어 괄호 병기). Phase 5.5+ `openai` / `anthropic` 어댑터 추가 시 동일 zod 출력 스키마 · 동일 system prompt로 env 변경만으로 교체 가능 | unit(gemini adapter zod schema), integration(gemini mock), manual 10건 오역 검수 |
 | REQ-FUNC-016 | GPT 환각 탐지 drop | REF-03 §4, REF-05 §4.3 | Must | F | Given 요약 내 숫자 토큰, When 원문에 없는 2자리 이상 숫자 발견, Then 결과 drop + `ingest_logs.notes='hallucination_drop'` + `is_translated=false` fallback | unit(환각 탐지 함수) |
-| REQ-FUNC-017 | OpenAI 월 예산 상한 $5 enforcement | REF-03 §4, CON-06 | Must | F | Given 현재 월 누적 비용, When 번역 호출 직전 체크하여 ≥ $5, Then skip + `notes='budget_exceeded'` + 제목만 저장 | unit(비용 집계 함수), E2E(mock 초과) |
+| REQ-FUNC-017 | 번역 Provider 예산/쿼터 상한 enforcement | REF-03 §4, CON-06 | Must | F | Given `TRANSLATION_PROVIDER` 값, When 번역 호출 직전 해당 Provider 한도 체크 (기본 `gemini`: 일 1,500 req / `openai` 선택 시: 월 $5 누적 `OPENAI_MONTHLY_BUDGET_CAP_USD`), Then 초과 시 skip + `notes='quota_exceeded'` + 제목만 저장 | unit(한도 체크 함수), E2E(mock 초과) |
 | REQ-FUNC-018 | 뉴스 카테고리 분류 (6종 enum) | REF-04 §3 | Must | D | Given config 키워드→카테고리 매핑, When insert, Then `category ∈ {cargo-market, cargo-ops, cargo-company, cargo-policy, airport-cargo, big-aviation}` | unit(매핑 함수), DB constraint |
 | REQ-FUNC-019 | 카테고리 quota soft 배분 (big-aviation 30%) | REF-03 §3.1, REF-05 §3.6 | Should | F | Given 금일 수집된 카드, When 카테고리별 집계, Then 관리자 승인 단계에서 ±10%p 초과 시 UI 경고 뱃지 | integration(mock 카드셋) |
 | REQ-FUNC-020 | `/news` 공개 피드 렌더 | REF-03 §2 US-I1, REF-07 | Must | F | Given `is_published=true` 카드 ≥ 5건, When `/news` 진입, Then 최신순 5장 카드 + LCP ≤ 2.5s | Lighthouse CI, Playwright E2E |
@@ -746,10 +752,10 @@ sequenceDiagram
 | REQ-NF-008 | 뉴스 목록 SQL p95 (1만 건 기준) | ≤ 200 ms | `idx_news_articles_is_published` | REF-04 §8 | Must |
 | REQ-NF-009 | 채용 필터 SQL p95 (10만 건) | ≤ 300 ms | `idx_job_posts_approved` | REF-04 §8 | Must |
 | REQ-NF-010 | WAU 쿼리 p95 | ≤ 100 ms | `idx_subscribers_last_active_at` | REF-04 §8 | Must |
-| REQ-NF-011 | daily-digest cron 완료 시간 | ≤ 55 s (Vercel Hobby 60s 한도 이내) | `ingest_logs.finished_at - started_at` | REF-06 §14 | Must |
+| REQ-NF-011 | daily-digest cron 완료 시간 | ≤ 55 s per invocation (Vercel Hobby 60s 한도 이내). **구현 방식: Loops List Send API 위임 (단일 호출, Loops 내부 큐). 위임 실패 시 폴백: 100명 chunk × 5분 간격 5회 분할 cron** | `ingest_logs.finished_at - started_at` | REF-06 §14 | Must |
 | REQ-NF-012 | `/api/cron/ingest-*` 완료 시간 | ≤ 50 s | ingest_logs | REF-05 §16 | Must |
 | REQ-NF-013 | `/api/subscribe` p95 응답 | ≤ 500 ms | Vercel Analytics | REF-05 §16 | Must |
-| REQ-NF-014 | OpenAI GPT-4o-mini 번역 p95 | ≤ 4 s per article | ingest_logs | REF-05 §16 | Should |
+| REQ-NF-014 | 번역 Provider p95 응답 (MVP 기본 Gemini 1.5 Flash) | ≤ 4 s per article | ingest_logs | REF-05 §16 | Should |
 | REQ-NF-015 | Loops webhook 응답 | ≤ 300 ms | Vercel | REF-05 §16 | Must |
 
 #### 4.2.b 가용성 / 신뢰성 (Availability & Reliability)
@@ -834,9 +840,9 @@ sequenceDiagram
 
 | ID | 지표 | 목표 (SLO) | 측정 | Source | Priority |
 |---|---|---|---|---|---|
-| REQ-NF-120 | OpenAI 월 비용 | ≤ $ 5 / 월 | OpenAI usage + `OPENAI_MONTHLY_BUDGET_CAP_USD` 환경변수 | PRD 02 §11, C-TEC-015 | Must |
+| REQ-NF-120 | 번역 Provider 월 비용 | **MVP 기본 `gemini` = $0** / `openai` 선택 시 ≤ $ 5 / 월 | Provider usage + 해당 Provider 예산 env | PRD 02 §11, C-TEC-015 | Must |
 | REQ-NF-121 | Supabase DB 용량 | ≤ 500 MB (Phase 5) | Supabase 대시보드 주간 | REF-04 §8 | Should |
-| REQ-NF-122 | Loops contacts 수 | ≤ 1,800 (2,000 대비 90%) | Loops API | REF-05 §16 | Must |
+| REQ-NF-122 | Loops contacts 수 | **알림 임계: 1,500 (75%) → Resend 전환 준비 착수 · 하드 상한: 1,800 (90%) → Resend 전환 완료** | Loops API | REF-05 §16 | Must |
 | REQ-NF-123 | Naver API 일 사용량 | ≤ 0.5 % (125 / 25,000) | Naver 콘솔 | REF-05 §16 | Should |
 | REQ-NF-124 | Worknet API 일 사용량 | ≤ 1 % (10 / 1,000) | Worknet 콘솔 | REF-05 §16 | Should |
 | REQ-NF-125 | `flights_snapshots.raw` jsonb 평균 (Phase 5.5) | ≤ 4 KB/row | 통계 쿼리 | REF-04 §8 | Could |
@@ -966,7 +972,7 @@ sequenceDiagram
 | Air Cargo News UK | `GET www.aircargonews.net/feed/` | 해외 카고 primary | 2회/일 | — | 2회 |
 | FlightGlobal Cargo | `GET www.flightglobal.com/cargo/rss` | 해외 카고 secondary | 2회/일 | — | 2회 |
 | 카고프레스 / CargoNews / Forwarder KR RSS | (OQ-R3) | 국내 카고 보조 | 2회/일 | — | 2회 |
-| OpenAI | `POST api.openai.com/v1/chat/completions` (model=gpt-4o-mini) | 해외 기사 한글 요약 | per article | 월 $5 cap | 2회 지수 |
+| Gemini (MVP 기본) | `POST generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent` | 해외 기사 한글 요약 | per article | 일 1,500 req 무료 | 2회 지수 |
 | Worknet | `GET openapi.work.go.kr/opi/opi/opia/wantedApi.do` | 카고 채용 primary | 10 키워드 × 1회/일 | 1,000/day | 3회 |
 | Saramin | `GET oapi.saramin.co.kr/...` | 카고 채용 secondary | 10 키워드 × 1회/일 | 500/day | 2회 |
 | Loops.so | `POST app.loops.so/api/v1/contacts/create`, `/contacts/update`, `/transactional` | 이메일 발송 + 구독자 관리 | 이벤트 기반 + 1일 1회 (digest) | 10 req/s, 2,000 contacts | 2회 |
@@ -1638,8 +1644,10 @@ classDiagram
 | 변수 | 용도 | 관련 REQ |
 |---|---|---|
 | `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET` | Naver News API | REQ-FUNC-010 |
-| `OPENAI_API_KEY` | GPT-4o-mini 번역 | REQ-FUNC-015 |
-| `OPENAI_MONTHLY_BUDGET_CAP_USD` | 월 $5 상한 | REQ-FUNC-017, REQ-NF-120 |
+| `TRANSLATION_PROVIDER` | 번역 Provider 선택 (`gemini` 기본 / `openai` `anthropic` Phase 5.5+) | C-TEC-015, REQ-FUNC-015 |
+| `GOOGLE_GENERATIVE_AI_API_KEY` | Gemini 1.5 Flash 번역 (MVP 기본) | REQ-FUNC-015 |
+| `OPENAI_API_KEY` | (Phase 5.5+ 옵션) `TRANSLATION_PROVIDER=openai` 선택 시 | REQ-FUNC-015 |
+| `OPENAI_MONTHLY_BUDGET_CAP_USD` | `openai` 선택 시 월 $5 상한 | REQ-FUNC-017, REQ-NF-120 |
 | `WORKNET_API_KEY` | 워크넷 채용 | REQ-FUNC-100 |
 | `SARAMIN_API_KEY` | 사람인 채용 | REQ-FUNC-101 |
 | `LOOPS_API_KEY` | Loops transactional | REQ-FUNC-200, 206 |
@@ -1654,6 +1662,22 @@ classDiagram
 ---
 
 ## Changelog
+
+- **2026-04-18 Rev 1.0 (Baseline — Phase 2 구현 착수)**: 교육자료 "SRS 검토 및 보강" 방법론(개발 난이도·기술 스택·운영 비용 3대 검토 기준 + PoC 3단 분류: 증명필요/증명불가/Dummy대체) 적용 후 Baseline 승격. 사용자 D1~D6 체크리스트 승인 완료 (2026-04-18). 주요 변경:
+  1. **C-TEC-015 Gemini-only 단순화**: `openai | gemini | anthropic` 3-provider 추상화 → **Gemini 1.5 Flash 단일 어댑터**. facade 구조(`src/lib/api/translation/index.ts`)는 유지해 Phase 5.5+ OQ-R17 실측 결과에 따라 `openai` / `anthropic` 추가 가능. 미구현 provider를 env로 지정 시 런타임 에러 반환. 의존성: `@google/generative-ai@^0.21` 만 MVP 설치.
+  2. **C-COST-002 / CON-06 / REQ-NF-120 비용 모순 해소**: OpenAI 월 $5 cap(500 WAU에서 실제 $6~7 소모 예상) → **Gemini 무료 티어 $0 기본**. `TRANSLATION_PROVIDER=openai` 선택 시에만 $5 cap 재활성화. 운영 예상 월 ₩7,500 → **₩0**. C-COST-001 월 ₩100,000 상한 대비 사용률 0%.
+  3. **REQ-NF-011 daily-digest 구현 방식 명시**: Vercel Hobby 60s 타임아웃 vs 500 WAU 일괄 발송 구조 모순(수학적 불가) → **Loops List Send API 위임**(단일 호출, Loops 내부 큐). 위임 실패 시 폴백: 100명 chunk × 5분 간격 5회 분할 cron. 구조적 블로커 해소.
+  4. **CON-01 / REQ-NF-122 Loops 전환 트리거 앞당김**: 1,800(90%) 하드 상한만 존재 → **1,500(75%) 알림 → Resend 전환 준비 착수 + 1,800 전환 완료**. DNS 인증 72h 여유 확보.
+  5. **REQ-FUNC-015/017 업데이트**: Provider 레퍼런스를 Gemini 기본으로 변경, 한도 enforcement 로직을 provider-agnostic 구조로(비용 기반 vs 쿼터 기반 구분).
+  6. **환경 변수 재구성**: `TRANSLATION_PROVIDER` + `GOOGLE_GENERATIVE_AI_API_KEY` 를 MVP 필수로 승격, `OPENAI_API_KEY` / `OPENAI_MONTHLY_BUDGET_CAP_USD` 는 Phase 5.5+ 옵션으로 강등.
+  7. **Rev 1.0 Amendment Triggers (→ Rev 1.1) 선언**: OQ-M6 실증, OQ-R17 실측, Supabase 500MB 근접, Loops 1,500 도달. 실증/실측 전에 v0.9.x 에 머무는 대신 Rev 1.0 베이스라인 + Amendment 모델 채택(ISO/IEC/IEEE 29148:2018 governance).
+  - **검토 보고서**: [`reviews/MVP-개발목표-적절성-종합-검토-보고서.md`](./reviews/MVP-개발목표-적절성-종합-검토-보고서.md)
+  - **작업 계획 (AI 작업용)**: [`../../plans/srs-v1.0-finalization-plan.md`](../../plans/srs-v1.0-finalization-plan.md)
+  - **차이 비교**: [`reviews/v0.9.2-vs-v1.0-diff.md`](./reviews/v0.9.2-vs-v1.0-diff.md)
+  - **Known residue (Rev 1.0.1 / 1.1 cleanup 예정)**:
+    - §3.1.a / §3.2 / §6.1 등 Mermaid 다이어그램 내 `OpenAI GPT-4o-mini` 라벨 일부 보존 (역사적 컨텍스트 · Phase 4 구현 시 실제 Provider 확정 후 전면 갱신).
+    - REQ 카운트 드리프트: Rev 0.9.2 헤더 claim "69 REQ-FUNC · 67 REQ-NF" vs 실측 §4.1 101 row · §4.2 99 row(87 unique). Rev 1.1에서 정합 cleanup.
+    - ADR-007 파일명 `ADR-007-translation-gpt-4o-mini.md` 은 파일 rename 없이 내부 내용만 Amendment 대상(Phase 4).
 
 - **2026-04-18 Rev 0.9.2 (PRD·ADR·CLAUDE.md 역반영 완료 + 폰트 확정)**: Rev 0.9.1에서 확정된 C-TEC-003·C-TEC-006·C-TEC-015·C-TEC-025 기술 스택 개정을 **SRS → PRD 단방향 의존 원칙에 따라 하위 문서에 역반영**. 변경 파일:
   - **[CLAUDE.md §4](../../CLAUDE.md)**: 모션(Lenis+GSAP → Framer Motion + tailwindcss-animate), 차트(Tremor/shadcn 이원화 → shadcn 단일), 번역(OpenAI 고정 → Provider-Agnostic), §6 환경변수에 `TRANSLATION_PROVIDER` 추가. Phase 5 설명도 갱신.
@@ -1696,8 +1720,8 @@ classDiagram
 
 | 역할 | 이름 | 날짜 | 서명 |
 |---|---|---|---|
-| Product Owner / Founder | (raion) | — | ⏳ Rev 0.9 검토 중 |
-| Requirements Engineer | Claude (Anthropic) | 2026-04-17 | ✅ Rev 0.9 제출 (Iteration 보완 완료) |
-| Technical Lead | (동일 founder) | — | — |
+| Product Owner / Founder | (raion) | 2026-04-18 | ✅ Rev 1.0 승인 (D1~D6 체크리스트 완료) |
+| Requirements Engineer | Claude (Anthropic) | 2026-04-18 | ✅ Rev 1.0 제출 (교육자료 "SRS 검토 및 보강" 방법론 반영) |
+| Technical Lead | (동일 founder) | 2026-04-18 | ✅ 기술 스택 검토 완료 (Gemini-only 단순화 승인) |
 
-**다음 단계**: 사용자 본인이 이 초안을 검토하고, 모든 REQ의 Status를 `Proposed → Approved` 로 일괄 전환 승인하면 Rev 1.0 확정 및 Phase 2 (Next.js 프로젝트 셋업)로 진입한다. 승인 전 수정 필요 항목은 **PRD 원본을 먼저 수정**하고 본 SRS에 교차 반영한다 (SRS-PRD 단방향 의존 원칙).
+**다음 단계**: Rev 1.0 승인 완료 → **Phase 2 (Next.js 프로젝트 셋업) 진입 가능**. 모든 REQ Status는 `Proposed` 에서 시작하여 Phase 2~5 동안 `Implemented → Verified` 로 개별 전이한다. Amendment Trigger(OQ-M6 / OQ-R17 / Supabase 500MB / Loops 1,500) 중 하나라도 도달하면 **Rev 1.1** 신규 발행 + `reviews/v1.0-vs-v1.1-diff.md` 작성. SRS 변경은 **PRD 원본을 먼저 수정**하고 본 SRS에 교차 반영한다 (SRS-PRD 단방향 의존 원칙 유지).
