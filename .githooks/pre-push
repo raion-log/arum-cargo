@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Arum Cargo — 로컬 pre-push 가드레일
+# GitHub Free + Private 조합에선 서버측 Branch Protection/Rulesets이 막혀있어
+# 대신 로컬에서 main/dev 직접 push를 경고한다.
+# 팀 합류 시 이 파일을 제거하고 서버측 Rulesets(Pro 승격 or Public 전환 후)로 이관.
+
+protected_branches="^(refs/heads/main|refs/heads/dev)$"
+
+while read local_ref local_sha remote_ref remote_sha; do
+  if [[ "$remote_ref" =~ $protected_branches ]]; then
+    branch="${remote_ref#refs/heads/}"
+    echo ""
+    echo "⚠️  [pre-push guard] '$branch' 브랜치에 직접 push 시도"
+    echo "    가이드: feature 브랜치에서 작업 후 GitHub PR로 merge 권장"
+    echo "    (GitHub Free + Private 조합은 서버측 protection 미지원)"
+    echo ""
+    read -p "    정말 진행할까요? [y/N] " -r < /dev/tty
+    echo ""
+    if [[ ! "$REPLY" =~ ^[Yy]$ ]]; then
+      echo "    push 취소됨. feature/* 브랜치 사용 권장."
+      exit 1
+    fi
+  fi
+done
+
+exit 0
