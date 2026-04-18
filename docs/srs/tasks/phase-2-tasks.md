@@ -4,8 +4,8 @@
 > **상위 컨텍스트**: [`00-overview.md`](./00-overview.md) 방법론 · [`01-macro-inventory.md`](./01-macro-inventory.md) 전체 인벤토리
 > **베이스라인**: [SRS Rev 1.0](../SRS-001-arum-cargo.md)
 > **Phase 2 DoD 원본**: [PRD 07 §3.2](../../prd/07-roadmap-milestones.md)
-> **작성일**: 2026-04-18 · **Few-Shot 샘플 수**: 17 / 38 (Wave 1: 7 · Wave 2: 10)
-> **Note**: Phase 2 총 Task 수는 실측 38개. Macro inventory 의 claim 33 과 drift 있음 — Rev 1.1 cleanup 대상 (본 파일이 authoritative)
+> **작성일**: 2026-04-18 · **Few-Shot 샘플 수**: **38 / 38 ✅ 완성** (Wave 1: 7 · Wave 2: 10 · Wave 3: 21)
+> **Note**: Phase 2 총 Task 수 실측 38개. Macro inventory 의 claim 33 과 drift 있음 — Rev 1.1 cleanup 대상 (본 파일이 authoritative)
 
 ---
 
@@ -19,14 +19,17 @@ Phase 2 의 33 Task 는 아래 3 블록으로 착수 순서가 정해진다:
 | **B. DB 스키마 + 시드** (가장 큰 선행 Task) | T-DB-001 ~ 019 + T-MOCK-006 + T-API-008 | **1~2주차** — migrations 전체 작성 · RLS · 트리거 · seed |
 | **C. 품질 게이트** (Phase 2 종료 판정용) | T-TEST-001·002·019 + T-NFR-003·012·014 | **2주차 말** — Phase 2 DoD 검증 |
 
-본 파일에서 아래 **Few-Shot 샘플 17개** 완성 (Wave 1: 7, Wave 2: 10):
-- **Wave 1 · A 블록**: T-INFRA-001 · T-INFRA-005
-- **Wave 1 · B 블록**: T-DB-001 · T-DB-014 · T-API-008
-- **Wave 1 · C 블록**: T-TEST-001 · T-NFR-014
-- **Wave 2 · A 블록**: T-INFRA-009 · T-INFRA-010 · T-INFRA-002
-- **Wave 2 · B 블록**: T-DB-013 · T-DB-002 · T-DB-003 · T-DB-004 · T-DB-011 · T-DB-018 · T-DB-019
+본 파일에서 **Phase 2 의 38 Task 전체** 완성 (3 wave 누적):
+- **Wave 1 (7) · A 블록**: T-INFRA-001 · T-INFRA-005
+- **Wave 1 (7) · B 블록**: T-DB-001 · T-DB-014 · T-API-008
+- **Wave 1 (7) · C 블록**: T-TEST-001 · T-NFR-014
+- **Wave 2 (10) · A 블록**: T-INFRA-009 · T-INFRA-010 · T-INFRA-002
+- **Wave 2 (10) · B 블록**: T-DB-013 · T-DB-002 · T-DB-003 · T-DB-004 · T-DB-011 · T-DB-018 · T-DB-019
+- **Wave 3 (21) · A 블록**: T-INFRA-003 · T-INFRA-004 · T-INFRA-006 · T-INFRA-007 · T-INFRA-008 · T-INFRA-013 · T-INFRA-014
+- **Wave 3 (21) · B 블록**: T-DB-005 · T-DB-006 · T-DB-007 · T-DB-008 · T-DB-009 · T-DB-010 · T-DB-012 · T-DB-015 · T-DB-016 · T-MOCK-006
+- **Wave 3 (21) · C 블록**: T-TEST-002 · T-TEST-019 · T-NFR-003 · T-NFR-012
 
-나머지 16 Task 는 동일 템플릿 · 동일 톤으로 다음 세션에서 확장.
+**Phase 2 Micro 추출 완료**. 사후 검토: [`reviews/phase-2-review.md`](./reviews/phase-2-review.md)
 
 ---
 
@@ -1285,36 +1288,967 @@ CREATE POLICY job_clicks_insert ON job_clicks
 
 ---
 
-## 1. 나머지 Phase 2 Task 목록 (21개 · 다음 세션 확장 대상)
+## Few-Shot Sample 18 / 38
 
-다음 세션에서 위 17개와 동일 풀버전 템플릿·동일 톤으로 확장할 Phase 2 Task:
+````markdown
+---
+name: Infra Task
+title: "[Infra] T-INFRA-003: Pretendard + Space Grotesk + JetBrains Mono 3종 폰트 로딩"
+labels: ['infra', 'phase:2', 'step:4', 'priority:must']
+---
 
-### A. 기반 인프라 (7)
-- T-INFRA-003 Pretendard + Space Grotesk + JetBrains Mono 폰트
-- T-INFRA-004 Framer Motion + tailwindcss-animate + react-intersection-observer
-- T-INFRA-006 migrations 네이밍 규약 CI
-- T-INFRA-007 src/lib/supabase + src/lib/api 뼈대 (T-API-008 일부 중첩 — 참조)
-- T-INFRA-008 Vercel 프로젝트 + arumcargo.vercel.app 배포
-- T-INFRA-013 SiteHeader · SiteFooter 기본 레이아웃
-- T-INFRA-014 next.config.js remotePatterns
+## 🎯 Summary
+- Task ID: T-INFRA-003 · 3종 폰트를 `next/font` 로 self-host + 페이로드 ≤100KB · CLS ≤0.1 유지
 
-### B. DB 스키마 + 시드 (10)
-- T-DB-005 news_clicks
-- T-DB-006 job_clicks
-- T-DB-007 daily_digests
-- T-DB-008 subscription_events
-- T-DB-009 email_events
-- T-DB-010 ingest_logs
-- T-DB-012 cargo_career_links + 14건 시드
-- T-DB-015 log_editor_pick_change 트리거
-- T-DB-016 update_subscriber_last_active 트리거
-- T-MOCK-006 aviation_glossary seed JSON (T-DB-011 보조)
+## 🔗 References
+- SRS REQ-FUNC-305 / REQ-NF-144 · C-TEC-004 · PRD 06 §3 타이포 시스템
 
-### C. 품질 게이트 — 추가 Test + NFR (4)
-- T-TEST-002 RLS negative test suite
-- T-TEST-019 SQL 인덱스 EXPLAIN ANALYZE
-- T-NFR-003 SQL 인덱스 성능 검증
-- T-NFR-012 보안 기초 (RLS + Service Role + Magic Link)
+## ✅ Task Breakdown
+- [ ] `web/src/app/fonts.ts` — `next/font/local` 또는 `next/font/google` 로 3종 로딩
+- [ ] Pretendard Variable (`.woff2` self-host, `subset=korean` 필수)
+- [ ] Space Grotesk (Google Fonts `display: 'swap'`)
+- [ ] JetBrains Mono (Google Fonts `display: 'swap'`)
+- [ ] CSS 변수 `--font-sans` / `--font-display` / `--font-mono` 루트 주입
+- [ ] `tailwind.config.ts` fontFamily 에 CSS 변수 연결
+- [ ] `app/layout.tsx` `<html>` 에 `className={fonts.variable}` 적용
+
+## 📋 Acceptance Criteria
+- **S1**: 초기 로딩 Network 탭에서 폰트 payload 총합 ≤ 100KB
+- **S2**: Lighthouse CLS ≤ 0.1 (폰트 swap 으로 인한 shift 최소화)
+- **S3**: 한글 본문 글리프 정상 렌더 (Pretendard Korean subset 확인)
+- **S4**: 숫자 타이포그래피 (운임·AWB 번호) Space Grotesk 적용 확인
+
+## ⚙️ Constraints
+- Google Fonts 임의 추가 금지 (C-TEC-004) · 변경 시 CLAUDE.md 동기화
+
+## ✔️ DoD
+- [ ] AC 4종 충족 · Lighthouse 모바일 Performance ≥80
+
+## 🔗 Dependencies
+- Depends: T-INFRA-001 · Blocks: 모든 UI Task (T-UI-*)
+````
+
+---
+
+## Few-Shot Sample 19 / 38
+
+````markdown
+---
+name: Infra Task
+title: "[Infra] T-INFRA-004: Framer Motion + tailwindcss-animate + react-intersection-observer 설치"
+labels: ['infra', 'phase:2', 'step:4', 'priority:must']
+---
+
+## 🎯 Summary
+- Task ID: T-INFRA-004 · 모션 스택 3종 설치 + `useReducedMotion()` 글로벌 훅 준비
+
+## 🔗 References
+- SRS C-TEC-003 · REQ-FUNC-308 · REQ-NF-142 · PRD 06 §4
+
+## ✅ Task Breakdown
+- [ ] `pnpm add framer-motion@^11 tailwindcss-animate react-intersection-observer`
+- [ ] `web/src/lib/motion/provider.tsx` — `MotionConfig` 루트 provider (`reducedMotion="user"`)
+- [ ] `web/src/lib/motion/use-arum-motion.ts` — 공통 스태거 variants 노출
+- [ ] `tailwind.config.ts` plugins 배열에 `require("tailwindcss-animate")`
+- [ ] GSAP · Lenis · Lottie · WebGL 라이브러리 설치 PR 차단 ESLint custom rule (T-INFRA-010 와 연계)
+
+## 📋 Acceptance Criteria
+- **S1**: `import { motion } from 'framer-motion'` 정상 동작
+- **S2**: OS `prefers-reduced-motion: reduce` 설정 시 `useReducedMotion()` true 반환
+- **S3**: `tailwindcss-animate` class (`animate-in`, `fade-in-0`) 적용 확인
+- **S4**: `IntersectionObserver` polyfill 없이 최신 브라우저 동작 (iOS Safari 14+)
+
+## ⚙️ Constraints
+- 번들: Framer Motion ≤ 40KB (tree-shake 후) · GSAP 금지 (C-TEC-003)
+
+## ✔️ DoD
+- [ ] AC 4종 충족 · `pnpm build` 번들 사이즈 검증
+
+## 🔗 Dependencies
+- Depends: T-INFRA-001 · T-INFRA-002 · Blocks: T-UI-301·302·303·304
+````
+
+---
+
+## Few-Shot Sample 20 / 38
+
+````markdown
+---
+name: Infra Task
+title: "[Infra] T-INFRA-006: supabase/migrations YYYYMMDDHHMMSS 네이밍 규약 CI 강제"
+labels: ['infra', 'phase:2', 'step:4', 'priority:must', 'ci']
+---
+
+## 🎯 Summary
+- Task ID: T-INFRA-006 · 마이그레이션 파일명 규약 CI 검증으로 순서 오류 방지
+
+## 🔗 References
+- SRS C-TEC-011 · REQ-NF-163 · PRD 03 §1 마이그레이션 규약
+
+## ✅ Task Breakdown
+- [ ] `scripts/check-migration-naming.ts` — 정규식 `/^\d{14}_[a-z0-9_]+\.sql$/` 검증
+- [ ] `.github/workflows/ci.yml` 에 step 추가 — `supabase/migrations/*.sql` 전수 검사
+- [ ] Timestamp prefix 가 과거 커밋보다 작으면 warning (경고만 · block 하지 않음)
+- [ ] `supabase/migrations/README.md` — 새 마이그레이션 추가 방법 가이드
+
+## 📋 Acceptance Criteria
+- **S1**: `create_users.sql` (timestamp 없음) → CI 실패
+- **S2**: `20260419000001_news_articles.sql` (정상) → 통과
+- **S3**: `20251231000001_old.sql` (미래 → 현재보다 과거) → warning 출력만
+- **S4**: 대문자·공백 포함 파일명 → CI 실패
+
+## ⚙️ Constraints
+- ORM 자동 생성 마이그레이션 금지 (C-TEC-011) · Raw SQL 만 허용
+
+## ✔️ DoD
+- [ ] AC 4종 검증 · fake PR 로 규약 위반 테스트 1회
+
+## 🔗 Dependencies
+- Depends: T-INFRA-010 (CI pipeline) · Blocks: 모든 T-DB-* (네이밍 준수 확인)
+````
+
+---
+
+## Few-Shot Sample 21 / 38
+
+````markdown
+---
+name: Infra Task
+title: "[Infra] T-INFRA-007: src/lib/supabase + src/lib/api 디렉토리 뼈대 + barrel 금지 규약"
+labels: ['infra', 'phase:2', 'step:4', 'priority:must']
+---
+
+## 🎯 Summary
+- Task ID: T-INFRA-007 · `src/lib/` 하위 서비스별 모듈 뼈대 + barrel export 금지 규약 확정
+- 목적: T-API-008 (Supabase clients) 이외 나머지 API client 파일들의 위치·네이밍 SSOT
+
+## 🔗 References
+- SRS C-TEC-009 (외부 API client 네이밍) · CON-08
+
+## ✅ Task Breakdown
+- [ ] `web/src/lib/supabase/` — T-API-008 에서 이미 다룸 (client.ts · server.ts · admin.ts · database.types.ts)
+- [ ] `web/src/lib/api/` 디렉토리 + 빈 client 파일 스텁:
+  - `naver-client.ts` · `rss-client.ts` · `worknet-client.ts` · `saramin-client.ts`
+  - `translation/index.ts` (facade) · `translation/gemini.ts` (adapter)
+  - `loops-client.ts` · `vercel-analytics-client.ts`
+- [ ] 각 스텁: `export async function {...}Fetch(): Promise<never> { throw new Error('not implemented') }`
+- [ ] `web/src/lib/email/` — Loops templates HTML builder 디렉토리 (stub)
+- [ ] `web/src/lib/cargo/` — 카고 도메인 유틸 (aviation term wrapper · trust score · exclude regex) stub
+- [ ] **Barrel export (`index.ts` 재노출) 금지** — 각 파일 직접 import 강제 (admin.ts 실수 import 방지)
+
+## 📋 Acceptance Criteria
+- **S1**: 디렉토리 구조 tree 출력이 PRD 07 §3.1 scope 5번과 일치
+- **S2**: stub 함수 호출 시 `Error('not implemented')` throw 확인
+- **S3**: `src/lib/supabase/index.ts` · `src/lib/api/index.ts` 파일 부재 (barrel 금지)
+- **S4**: ESLint 규칙으로 `import ... from '@/lib/api'` (디렉토리 직접 import) 금지
+
+## ⚙️ Constraints
+- 각 client 파일 상단 주석에 관련 REQ-FUNC ID · Phase 명시
+- zod schema 파일은 각 client 내부 co-locate (별도 `schemas/` 금지)
+
+## ✔️ DoD
+- [ ] AC 4종 충족 · Phase 4 진입 시 stub 구현 교체 Task 로 이어짐
+
+## 🔗 Dependencies
+- Depends: T-INFRA-001 · Blocks: T-API-001 ~ 007 · 009 (실 구현)
+````
+
+---
+
+## Few-Shot Sample 22 / 38
+
+````markdown
+---
+name: Infra Task
+title: "[Infra] T-INFRA-008: Vercel 프로젝트 생성 + arumcargo.vercel.app + Analytics 활성"
+labels: ['infra', 'phase:2', 'step:4', 'priority:must']
+---
+
+## 🎯 Summary
+- Task ID: T-INFRA-008 · Vercel Hobby 프로젝트 + Git push 자동 배포 + 기본 도메인 `arumcargo.vercel.app`
+
+## 🔗 References
+- SRS C-TEC-019 · C-TEC-020 · CON-12 · PRD 07 §3.1
+
+## ✅ Task Breakdown
+- [ ] Vercel 계정에서 GitHub `raion-log/arum-cargo` 연결
+- [ ] Root Directory: `web/` · Framework: Next.js · Build: `pnpm build`
+- [ ] Project name: `arumcargo` → 자동 도메인 `arumcargo.vercel.app`
+- [ ] Environment Variables 설정 (`.env.local` 키 전부 · Production · Preview)
+- [ ] Vercel Analytics 활성화 (Settings → Analytics)
+- [ ] Vercel Speed Insights 옵션 활성
+- [ ] Branch 배포 규칙: `main` → Production · `dev` → Preview
+- [ ] Deployment Protection 설정 확인 (Preview 비밀번호 옵션 off — 테스터 접근 용이)
+
+## 📋 Acceptance Criteria
+- **S1**: `git push origin dev` → Vercel Preview URL 자동 생성 (2분 이내 배포)
+- **S2**: `arumcargo.vercel.app` GET 200 응답
+- **S3**: Vercel Analytics Dashboard 에서 MUV 카운트 시작
+- **S4**: Production env 에서 Supabase 쿼리 성공 (Phase 2 후반)
+
+## ⚙️ Constraints
+- Vercel Hobby 무료 티어 · 유료 전환 시 C-COST-001 승인 필요
+- 커스텀 도메인 전환은 CON-12 조건 (WAU 500 or 제휴 문의)
+
+## ✔️ DoD
+- [ ] AC 4종 충족 · 실제 배포 URL 1회 접속 로그 남김
+
+## 🔗 Dependencies
+- Depends: T-INFRA-001 · T-INFRA-009 (env.example) · T-INFRA-005 (Supabase keys)
+- Blocks: 실 환경 QA · 테스터 베타 참여
+````
+
+---
+
+## Few-Shot Sample 23 / 38
+
+````markdown
+---
+name: Infra Task
+title: "[Infra] T-INFRA-013: SiteHeader · SiteFooter 기본 레이아웃 + 사업자정보 footer"
+labels: ['infra', 'phase:2', 'step:4', 'priority:must', 'legal']
+---
+
+## 🎯 Summary
+- Task ID: T-INFRA-013 · 전 화면 공통 헤더·푸터 레이아웃. Footer 에 §50 발신자 정보 필수.
+
+## 🔗 References
+- SRS REQ-FUNC-310 (법정 페이지 링크) · CON-09 (실명 비노출)
+- PRD 06 §5 레이아웃
+
+## ✅ Task Breakdown
+- [ ] `web/src/components/layout/site-header.tsx` — 로고 (`아름 카고`) · 내비 (뉴스 · 채용 · About) · 구독 CTA
+- [ ] `web/src/components/layout/site-footer.tsx`:
+  - 저작권 (© 2026 Arum Cargo)
+  - `/privacy` · `/terms` 링크
+  - 사업자등록번호 · 주소 · 이메일 · 연락처 (env 또는 config 에서 주입)
+  - 한아름종합물류 구분 문구: "본 서비스는 (주)한아름종합물류와 무관합니다"
+- [ ] `app/layout.tsx` 루트에 `<SiteHeader />` · `<SiteFooter />` 배치
+- [ ] 모바일 반응형 (햄버거 메뉴) · 360px 최소폭 지원
+- [ ] About 페이지에 실명·회사명 노출 금지 lint 규칙 추가 (T-INFRA-010 연계)
+
+## 📋 Acceptance Criteria
+- **S1**: 모든 라우트 접근 시 헤더·푸터 렌더링
+- **S2**: Footer grep 으로 사업자정보 4항목 문자열 존재
+- **S3**: 한아름종합물류 구분 문구 노출
+- **S4**: 모바일 360px 에서 레이아웃 붕괴 없음
+
+## ⚙️ Constraints
+- About 페이지 + 푸터 어디에도 Founder 실명·회사·학교 문자열 부재 (CON-09)
+- 사업자정보는 env 로 주입 — 실 값은 `.env.local` / Vercel env
+
+## ✔️ DoD
+- [ ] AC 4종 충족 · axe DevTools 0 critical · 법률 자문 후 문구 확정 (T-INFRA-009 env 키 중 `NEXT_PUBLIC_BUSINESS_INFO` 도입 검토)
+
+## 🔗 Dependencies
+- Depends: T-INFRA-001 · T-INFRA-002 · T-INFRA-003 · Blocks: Phase 3 UI Task 전체
+````
+
+---
+
+## Few-Shot Sample 24 / 38
+
+````markdown
+---
+name: Infra Task
+title: "[Infra] T-INFRA-014: next.config.js remotePatterns — 썸네일 직접 링크 허용 도메인"
+labels: ['infra', 'phase:2', 'step:4', 'priority:should']
+---
+
+## 🎯 Summary
+- Task ID: T-INFRA-014 · 뉴스 썸네일 외부 직접 로드를 위한 허용 도메인 화이트리스트
+
+## 🔗 References
+- SRS REQ-FUNC-032 · REQ-FUNC-311 · PRD 02 §3.4
+
+## ✅ Task Breakdown
+- [ ] `web/next.config.mjs` `images.remotePatterns` 추가:
+  - 카고프레스 · Loadstar · Air Cargo News UK · FlightGlobal · Naver 뉴스 CDN · Worknet · Saramin
+  - 각 도메인 패턴: `{ protocol: 'https', hostname: '*.example.com' }`
+- [ ] `images.unoptimized: true` 옵션은 **금지** (Vercel Image Optimization 사용)
+- [ ] 알 수 없는 도메인 fallback: placeholder 이미지 (`/images/placeholder-cargo.svg`)
+- [ ] 월 1회 RSS 피드 헬스체크로 신규 도메인 감지 시 업데이트
+
+## 📋 Acceptance Criteria
+- **S1**: 허용 도메인 썸네일 `<Image>` 렌더 성공
+- **S2**: 미허용 도메인 요청 시 Next.js 400 에러 → placeholder 로 대체
+- **S3**: CLS ≤ 0.1 (이미지 로드 시 layout shift 없음)
+
+## ⚙️ Constraints
+- 원본 저장 금지 (CON-07) · Vercel CDN 캐시만 허용
+- 신규 도메인 추가 시 법적 공정 이용 범위 재확인
+
+## ✔️ DoD
+- [ ] AC 3종 충족 · Lighthouse 이미지 관련 score 통과
+
+## 🔗 Dependencies
+- Depends: T-INFRA-001 · Blocks: T-UI-* 뉴스 카드 렌더링
+````
+
+---
+
+## Few-Shot Sample 25 / 38
+
+````markdown
+---
+name: DB Task
+title: "[DB] T-DB-005: news_clicks 테이블 (beacon tracking)"
+labels: ['db', 'phase:2', 'step:1', 'priority:must']
+---
+
+## 🎯 Summary
+- Task ID: T-DB-005 · 외부 원문 클릭 beacon 수신용 테이블
+
+## 🔗 References
+- SRS REQ-FUNC-024 · REQ-FUNC-119 (job_clicks 와 대칭)
+- PRD 04 §9 분석 테이블
+
+## ✅ Task Breakdown
+- [ ] `supabase/migrations/20260419000005_create_news_clicks.sql`
+- [ ] 컬럼:
+  - `id uuid PK`
+  - `news_article_id uuid NOT NULL REFERENCES news_articles(id) ON DELETE CASCADE`
+  - `subscriber_id uuid REFERENCES subscribers(id) ON DELETE SET NULL` (NULL=비구독자)
+  - `clicked_at timestamptz NOT NULL DEFAULT now()`
+  - `user_agent text` · `ip inet` · `referrer text`
+- [ ] 인덱스: `(news_article_id, clicked_at DESC)`
+- [ ] RLS: anon INSERT 만 (T-DB-019 일괄 적용)
+
+## 📋 Acceptance Criteria
+- **S1**: anon INSERT 성공 · SELECT 차단
+- **S2**: FK 없는 news_article_id 는 참조 무결성 위반
+- **S3**: ON DELETE CASCADE 동작 (news 삭제 시 clicks 자동 삭제)
+
+## ⚙️ Constraints
+- PII 최소화: IP 는 로그로만 · 90일 retention (REQ-NF-165)
+
+## ✔️ DoD
+- [ ] AC 3종 + `/api/news/click/[id]` beacon endpoint 연동 준비
+
+## 🔗 Dependencies
+- Depends: T-DB-001 · T-DB-003 · Blocks: T-FEAT-024-W
+````
+
+---
+
+## Few-Shot Sample 26 / 38
+
+````markdown
+---
+name: DB Task
+title: "[DB] T-DB-006: job_clicks 테이블 (beacon tracking)"
+labels: ['db', 'phase:2', 'step:1', 'priority:must']
+---
+
+## 🎯 Summary
+- Task ID: T-DB-006 · 채용 공고 외부 원문 클릭 beacon. news_clicks 와 대칭 구조.
+
+## 🔗 References
+- SRS REQ-FUNC-119 · PRD 04 §9
+
+## ✅ Task Breakdown
+- [ ] `supabase/migrations/20260419000006_create_job_clicks.sql`
+- [ ] 컬럼: `id` · `job_post_id uuid REFERENCES job_posts ON DELETE CASCADE` · `subscriber_id (null ok)` · `clicked_at` · `user_agent` · `ip` · `referrer`
+- [ ] 인덱스 `(job_post_id, clicked_at DESC)`
+- [ ] RLS anon INSERT 만
+
+## 📋 AC
+- **S1~S3**: news_clicks 와 동일 패턴 (FK · CASCADE · anon INSERT 허용)
+
+## ⚙️ Constraints
+- Job 신뢰도 지표 (click-through) 분석에 사용 · Phase 5+ 대시보드 KPI
+
+## ✔️ DoD
+- [ ] AC 3종 · `/api/jobs/click/[id]` 연동 준비
+
+## 🔗 Dependencies
+- Depends: T-DB-002 · T-DB-003 · Blocks: T-FEAT-119-W
+````
+
+---
+
+## Few-Shot Sample 27 / 38
+
+````markdown
+---
+name: DB Task
+title: "[DB] T-DB-007: daily_digests 테이블 + digest_date UNIQUE idempotency"
+labels: ['db', 'phase:2', 'step:1', 'priority:must']
+---
+
+## 🎯 Summary
+- Task ID: T-DB-007 · 일 1회 다이제스트 발송 기록 + 멱등성 보장
+
+## 🔗 References
+- SRS REQ-FUNC-212 · PRD 05 §5.3
+
+## ✅ Task Breakdown
+- [ ] `20260419000007_create_daily_digests.sql`
+- [ ] `digest_status` enum: `pending` · `sent` · `partial` · `failed`
+- [ ] 컬럼:
+  - `id uuid PK`
+  - `digest_date date UNIQUE NOT NULL` (**멱등성 키 — 같은 날 2회 호출 차단**)
+  - `status digest_status NOT NULL DEFAULT 'pending'`
+  - `news_article_ids uuid[] NOT NULL DEFAULT '{}'` (발송 포함 뉴스 ID)
+  - `job_post_ids uuid[] NOT NULL DEFAULT '{}'`
+  - `subscriber_count int NOT NULL DEFAULT 0`
+  - `sent_count int NOT NULL DEFAULT 0`
+  - `loops_send_id text` (Loops List Send 응답)
+  - `notes text`
+  - `started_at` · `finished_at` · `created_at`
+
+## 📋 AC
+- **S1**: 같은 `digest_date` 로 2회 INSERT → UNIQUE 위반
+- **S2**: status enum invalid 값 차단
+- **S3**: retention 7일 cron (REQ-NF-165 와 유사하나 digest 는 7일)
+
+## ⚙️ Constraints
+- Loops List Send API 위임 구조에서 `loops_send_id` 가 핵심 추적 ID (REQ-NF-011)
+
+## ✔️ DoD
+- [ ] AC 3종 · T-FEAT-206-W (daily-digest cron) 연동 준비
+
+## 🔗 Dependencies
+- Depends: T-INFRA-005 · Blocks: T-FEAT-206-W · T-FEAT-215-W
+````
+
+---
+
+## Few-Shot Sample 28 / 38
+
+````markdown
+---
+name: DB Task
+title: "[DB] T-DB-008: subscription_events 테이블 + 13개월 보존 (정보통신망법 §50)"
+labels: ['db', 'phase:2', 'step:1', 'priority:must', 'legal']
+---
+
+## 🎯 Summary
+- Task ID: T-DB-008 · 동의·수신거부 이력 감사 로그 · 13개월 이상 보존
+
+## 🔗 References
+- SRS REQ-FUNC-509 · CON-04 · 정보통신망법 §50
+
+## ✅ Task Breakdown
+- [ ] `20260419000008_create_subscription_events.sql`
+- [ ] `event_type` enum: `consented` · `verified` · `unsubscribed` · `settings_changed` · `reactivated`
+- [ ] 컬럼:
+  - `id uuid PK`
+  - `subscriber_id uuid NOT NULL REFERENCES subscribers(id) ON DELETE RESTRICT` (**RESTRICT — 감사 기록 보존**)
+  - `event_type event_type NOT NULL`
+  - `occurred_at timestamptz NOT NULL DEFAULT now()`
+  - `ip inet` · `user_agent text`
+  - `metadata jsonb DEFAULT '{}'` (변경 전후 값 등)
+- [ ] 인덱스 `(subscriber_id, occurred_at DESC)` · `(event_type, occurred_at DESC)`
+- [ ] **retention cron 부재 검증** — 13개월 경과 행도 삭제 금지 (REQ-FUNC-509)
+
+## 📋 AC
+- **S1**: subscriber 삭제 시도 → RESTRICT 로 차단 (감사 기록 손실 방지)
+- **S2**: 5 event_type 값만 허용
+- **S3**: 13개월 경과 row 가 여전히 존재 (manual 검증)
+
+## ⚙️ Constraints
+- Personal data retention ≥ 13mo (§50) · 개인정보처리방침에 명시
+- anon SELECT 전면 차단 (T-DB-019)
+
+## ✔️ DoD
+- [ ] AC 3종 충족 · 개인정보처리방침 초안 연계
+
+## 🔗 Dependencies
+- Depends: T-DB-003 · Blocks: T-FEAT-209-W · T-FEAT-210-W · T-NFR-015
+````
+
+---
+
+## Few-Shot Sample 29 / 38
+
+````markdown
+---
+name: DB Task
+title: "[DB] T-DB-009: email_events 테이블 + Loops webhook FK"
+labels: ['db', 'phase:2', 'step:1', 'priority:must']
+---
+
+## 🎯 Summary
+- Task ID: T-DB-009 · Loops 이메일 이벤트 수신 저장 · WAU 집계의 핵심 입력원
+
+## 🔗 References
+- SRS REQ-FUNC-216 · REQ-FUNC-217 · PRD 05 §11
+
+## ✅ Task Breakdown
+- [ ] `20260419000009_create_email_events.sql`
+- [ ] `email_event_type` enum: `sent` · `delivered` · `opened` · `clicked` · `bounced` · `complained`
+- [ ] 컬럼:
+  - `id uuid PK`
+  - `subscriber_id uuid REFERENCES subscribers(id) ON DELETE SET NULL`
+  - `loops_message_id text NOT NULL`
+  - `event_type email_event_type NOT NULL`
+  - `occurred_at timestamptz NOT NULL`
+  - `received_at timestamptz NOT NULL DEFAULT now()` (webhook 수신 시각)
+  - `metadata jsonb DEFAULT '{}'`
+- [ ] 인덱스 `(subscriber_id, event_type, occurred_at DESC)` — WAU 쿼리용 · `(loops_message_id)` — webhook 중복 방지
+- [ ] UNIQUE `(loops_message_id, event_type, occurred_at)` — webhook 재전송 중복 차단
+
+## 📋 AC
+- **S1**: webhook 중복 수신 시 UNIQUE 위반 → `on conflict do nothing` 안전 처리
+- **S2**: trigger T-DB-016 발동 → `subscribers.last_active_at` 자동 갱신 (opened/clicked 이벤트)
+- **S3**: subscriber 삭제 시 event 는 보존 (SET NULL)
+
+## ⚙️ Constraints
+- Loops 무료 티어 webhook 지연 ≤ 5분 (REQ-NF-024)
+
+## ✔️ DoD
+- [ ] AC 3종 · T-FEAT-216-W (webhook receiver) 연동
+
+## 🔗 Dependencies
+- Depends: T-DB-003 · Blocks: T-DB-016 · T-FEAT-216-W · T-FEAT-408-R (WAU 쿼리)
+````
+
+---
+
+## Few-Shot Sample 30 / 38
+
+````markdown
+---
+name: DB Task
+title: "[DB] T-DB-010: ingest_logs 테이블 + 90일 retention + status enum"
+labels: ['db', 'phase:2', 'step:1', 'priority:must']
+---
+
+## 🎯 Summary
+- Task ID: T-DB-010 · 모든 cron/ingest 실행 감사 로그 · 실패 알림·KPI 계측 기반
+
+## 🔗 References
+- SRS REQ-FUNC-508 · REQ-NF-165 (90일 retention) · PRD 04 §13
+
+## ✅ Task Breakdown
+- [ ] `20260419000010_create_ingest_logs.sql`
+- [ ] `ingest_source` enum: `naver` · `rss_domestic` · `rss_overseas` · `worknet` · `saramin` · `gemini` · `daily_digest` · `webhook_loops`
+- [ ] `ingest_status` enum: `running` · `success` · `partial` · `failed`
+- [ ] 컬럼:
+  - `id uuid PK`
+  - `source ingest_source NOT NULL`
+  - `status ingest_status NOT NULL DEFAULT 'running'`
+  - `started_at timestamptz NOT NULL DEFAULT now()`
+  - `finished_at timestamptz`
+  - `records_total int DEFAULT 0` · `records_new int` · `records_skipped int` · `records_error int`
+  - `notes text` (환각 · 쿼터 초과 · 예외 메시지)
+  - `raw jsonb` (디버깅용 외부 응답 snapshot · 옵션)
+- [ ] 인덱스 `(source, started_at DESC)` · `(status, started_at DESC)` (T-DB-018 에 포함)
+- [ ] `supabase/functions/cleanup_ingest_logs/index.ts` (Supabase Edge Function or pg_cron) — 90일 경과 row DELETE
+
+## 📋 AC
+- **S1**: 각 cron 시작 시 status='running' INSERT → 종료 시 UPDATE
+- **S2**: 90일 경과 row cleanup cron 실행 → 대상 삭제
+- **S3**: 실패율 집계 쿼리 성능 ≤ 100ms (월간 데이터셋)
+
+## ⚙️ Constraints
+- raw jsonb 는 선택 저장 · Supabase 500MB 초과 리스크 시 비활성
+- 90일 cleanup 은 pg_cron extension 또는 Supabase Scheduled Functions
+
+## ✔️ DoD
+- [ ] AC 3종 + 90일 cleanup 실제 실행 1회 검증
+
+## 🔗 Dependencies
+- Depends: T-INFRA-005 · Blocks: T-FEAT-508-W · T-FEAT-506-W · T-NFR-022 · 모든 cron Task
+````
+
+---
+
+## Few-Shot Sample 31 / 38
+
+````markdown
+---
+name: DB Task (Seed)
+title: "[DB] T-DB-012: cargo_career_links 테이블 + 14개 카고 기업 공식 채용 시드"
+labels: ['db', 'phase:2', 'step:1', 'priority:must', 'seed']
+---
+
+## 🎯 Summary
+- Task ID: T-DB-012 · 카고 14개 기업 공식 채용 페이지 딥링크 시드 (UI 딥링크 그리드 뒷받침)
+
+## 🔗 References
+- SRS REQ-FUNC-112 · PRD 06 §5 + §6.1
+
+## ✅ Task Breakdown
+- [ ] `20260419000012_create_cargo_career_links.sql`
+- [ ] 컬럼:
+  - `id uuid PK`
+  - `company_name text UNIQUE NOT NULL`
+  - `company_en text`
+  - `career_url text NOT NULL`
+  - `logo_url text`
+  - `category text` (`airline_cargo` · `forwarder` · `consolidator` · `ground_handling`)
+  - `display_order int NOT NULL DEFAULT 100`
+  - `is_active boolean NOT NULL DEFAULT true`
+  - `created_at` / `updated_at`
+- [ ] 14개 시드:
+  1. 대한항공카고 · 2. 아시아나카고 · 3. 에어인천 · 4. 서울항공 · 5. 우정항공 · 6. 트리플크라운 (항공사 카고)
+  7. 판토스 · 8. CJ대한통운 · 9. 한진 · 10. 코스모항운 · 11. 세방 · 12. 동방 (포워더/콘솔)
+  13. 스위스포트 · 14. KAS (지상조업)
+- [ ] 각 `career_url` 은 **공식 채용 페이지 딥링크** (2026-04-18 기준 검증 필수 — OQ-R3/R4 연계)
+- [ ] RLS: anon SELECT 공개 (T-DB-019)
+
+## 📋 AC
+- **S1**: `SELECT COUNT(*) WHERE is_active=true` = 14
+- **S2**: `company_name` UNIQUE 위반 재시드 차단
+- **S3**: 14개 URL 각각 200 응답 검증 (manual Phase 2 진입 직전)
+- **S4**: `/jobs` 화면에서 14 Bento 카드 렌더링 (T-UI-112 연계)
+
+## ⚙️ Constraints
+- URL 변경 시 월 1회 헬스체크 · 404 발견 시 `is_active=false` 전환
+- 14개 외 추가는 제휴 문의 발생 시점에 검토
+
+## ✔️ DoD
+- [ ] AC 4종 충족 · 14개 URL manual 검증 완료
+
+## 🔗 Dependencies
+- Depends: T-INFRA-005 · Blocks: T-UI-112 · T-FEAT-112
+````
+
+---
+
+## Few-Shot Sample 32 / 38
+
+````markdown
+---
+name: DB Task (Trigger)
+title: "[DB] T-DB-015: log_editor_pick_change 트리거 — 에디터 Pick 수정 이력 자동 기록"
+labels: ['db', 'phase:2', 'step:1', 'priority:must']
+---
+
+## 🎯 Summary
+- Task ID: T-DB-015 · `news_articles.editor_pick` UPDATE 시 이전 값·tone·작성자·시각을 `editor_pick_history` jsonb 배열에 append
+
+## 🔗 References
+- SRS REQ-FUNC-026 · PRD 03 §5.3
+
+## ✅ Task Breakdown
+- [ ] `20260419000015_trigger_log_editor_pick_change.sql`
+- [ ] Trigger function:
+```sql
+CREATE OR REPLACE FUNCTION log_editor_pick_change()
+RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+  IF OLD.editor_pick IS DISTINCT FROM NEW.editor_pick THEN
+    NEW.editor_pick_history := COALESCE(OLD.editor_pick_history, '[]'::jsonb) ||
+      jsonb_build_object(
+        'previous_pick', OLD.editor_pick,
+        'previous_tone', OLD.editor_pick_tone,
+        'changed_at', now(),
+        'changed_by', current_setting('request.jwt.claim.sub', true)
+      );
+  END IF;
+  RETURN NEW;
+END;
+$$;
+```
+- [ ] Trigger 등록 BEFORE UPDATE ON news_articles FOR EACH ROW
+
+## 📋 AC
+- **S1**: editor_pick 1회 수정 → history 배열 길이 1 (이전 값 포함)
+- **S2**: 3회 연속 수정 → 길이 3 · 시각 순서 정렬
+- **S3**: editor_pick 변경 없는 UPDATE → history 변화 없음
+- **S4**: `changed_by` 에 admin JWT sub 기록 (Magic Link 세션 연결)
+
+## ⚙️ Constraints
+- BEFORE 트리거 (NEW 수정 가능) · AFTER 는 사용 불가
+- JWT sub 을 못 가져오면 NULL · 본 Task 에서는 throw 하지 않음
+
+## ✔️ DoD
+- [ ] AC 4종 충족 · T-TEST-001 suite 에 통합
+
+## 🔗 Dependencies
+- Depends: T-DB-001 · T-DB-004 · Blocks: T-FEAT-025-W · T-FEAT-407-W
+````
+
+---
+
+## Few-Shot Sample 33 / 38
+
+````markdown
+---
+name: DB Task (Trigger)
+title: "[DB] T-DB-016: update_subscriber_last_active 트리거 — email_events → subscribers.last_active_at"
+labels: ['db', 'phase:2', 'step:1', 'priority:must']
+---
+
+## 🎯 Summary
+- Task ID: T-DB-016 · `email_events` INSERT (`opened` · `clicked`) 시 대응 subscriber 의 `last_active_at` 을 event.occurred_at 으로 갱신 — WAU 집계의 핵심
+
+## 🔗 References
+- SRS REQ-FUNC-217 · REQ-NF-010 · PRD 05 §11
+
+## ✅ Task Breakdown
+- [ ] `20260419000016_trigger_update_subscriber_last_active.sql`
+- [ ] Trigger function:
+```sql
+CREATE OR REPLACE FUNCTION update_subscriber_last_active()
+RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+  IF NEW.event_type IN ('opened', 'clicked') AND NEW.subscriber_id IS NOT NULL THEN
+    UPDATE subscribers
+    SET last_active_at = GREATEST(COALESCE(last_active_at, 'epoch'::timestamptz), NEW.occurred_at)
+    WHERE id = NEW.subscriber_id;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+```
+- [ ] Trigger 등록 AFTER INSERT ON email_events
+
+## 📋 AC
+- **S1**: `opened` INSERT → subscribers.last_active_at 갱신
+- **S2**: `clicked` INSERT → 동일
+- **S3**: `sent` · `delivered` INSERT → last_active_at 변화 없음 (opened/clicked 만)
+- **S4**: GREATEST 로직 — 오래된 event 재수신 시 더 최근 시각 유지
+
+## ⚙️ Constraints
+- AFTER 트리거 (UPDATE 는 별도 쿼리)
+- GREATEST 는 webhook 순서 역전 방어 (재전송 지연)
+
+## ✔️ DoD
+- [ ] AC 4종 충족 · T-TEST-001 suite 에 통합 · T-FEAT-408-R (WAU 쿼리) 정합성 확인
+
+## 🔗 Dependencies
+- Depends: T-DB-003 · T-DB-009 · Blocks: T-FEAT-408-R · T-FEAT-409-R · T-FEAT-216-W
+````
+
+---
+
+## Few-Shot Sample 34 / 38
+
+````markdown
+---
+name: Mock Data Task
+title: "[Mock] T-MOCK-006: aviation_glossary seed JSON 50건 (T-DB-011 보조 데이터 파일)"
+labels: ['mock', 'phase:2', 'step:1', 'priority:must', 'seed']
+---
+
+## 🎯 Summary
+- Task ID: T-MOCK-006 · `aviation_glossary` 테이블 시드용 JSON 파일 산출 · 11년차 현직자 voice 검증 필수
+
+## 🔗 References
+- SRS REQ-FUNC-030 · T-DB-011 (테이블 스키마)
+
+## ✅ Task Breakdown
+- [ ] `supabase/seed/aviation_glossary.json` 파일 작성 (50건)
+- [ ] 스키마: `{ term, full_name_en, name_ko, definition, example, category }` 배열
+- [ ] 카테고리 분포 (T-DB-011 참조): 문서 10 · 장비 10 · 지수/운임 10 · 기종/운영 10 · 조직/역할 10
+- [ ] 각 entry:
+  - `definition`: 1~2문장 · 한국어 · 카고 현직자 voice
+  - `example`: 1줄 · 실 업무 상황 (예: "AWB 123-45678901 조회해서 상태 확인")
+- [ ] Supabase CLI seed 스크립트: `supabase db seed --file aviation_glossary.json`
+- [ ] 또는 SQL INSERT 파일 `supabase/migrations/20260419000011_seed_glossary.sql` 로 내장 (마이그레이션 방식 선호)
+
+## 📋 AC
+- **S1**: JSON 파싱 성공 · 50건 정합
+- **S2**: 모든 entry 의 definition 길이 ≥ 10자 · example 존재
+- **S3**: 한국어 번역 정확성 — 사용자(Founder) 50건 검수 승인
+- **S4**: `supabase db reset` 후 50 rows 존재
+
+## ⚙️ Constraints
+- 번역 자동화 금지 (현직자 voice 중요) · Gemini 로 생성한 초안도 반드시 검수 후 커밋
+- 재시드 시 `ON CONFLICT (term) DO NOTHING`
+
+## ✔️ DoD
+- [ ] AC 4종 · Founder 50건 검수 증거 커밋 메시지에 포함
+
+## 🔗 Dependencies
+- Depends: T-DB-011 · Blocks: T-FEAT-031-R · T-UI-029
+````
+
+---
+
+## Few-Shot Sample 35 / 38
+
+````markdown
+---
+name: Test Task
+title: "[Test] T-TEST-002: RLS negative test suite — anon/service_role 격리 증명"
+labels: ['test', 'phase:2', 'step:3', 'priority:must', 'security']
+---
+
+## 🎯 Summary
+- Task ID: T-TEST-002 · anon · authenticated · service_role 3개 role 로 각 테이블 CRUD 시도하여 RLS 정책 negative test 로 증명
+
+## 🔗 References
+- SRS REQ-FUNC-500~504 · REQ-NF-040~044 · T-DB-019
+
+## ✅ Task Breakdown
+- [ ] `supabase/tests/rls/news_articles.test.sql` · `job_posts.test.sql` · `subscribers.test.sql` · `admin_users.test.sql` · `glossary.test.sql`
+- [ ] 각 테이블별 시나리오:
+  - anon INSERT 허용 여부
+  - anon SELECT 차단/공개 범위
+  - anon UPDATE/DELETE 차단
+  - authenticated (로그인 사용자) 행동
+  - service_role bypass 확인
+- [ ] pgTAP `results_eq` · `throws_ok` 활용
+
+## 📋 AC
+- **news_articles**: anon SELECT `is_published=false` → 0 rows · anon INSERT → denied · service_role 전체 허용
+- **job_posts**: anon SELECT `status!='approved'` → 0 rows · anon INSERT → denied
+- **subscribers**: anon INSERT → 성공 · anon SELECT → 0 rows (이메일 유출 방지)
+- **admin_users**: anon 모든 CRUD → denied
+- **aviation_glossary · cargo_career_links**: anon SELECT → 전 row · anon INSERT/UPDATE → denied
+- **news_clicks · job_clicks**: anon INSERT → 성공 · anon SELECT → 0 rows
+- **daily_digests · subscription_events · email_events · ingest_logs**: anon 모든 CRUD → denied
+
+## ⚙️ Constraints
+- 각 test 는 BEGIN/ROLLBACK 트랜잭션 격리
+- CI 시간 ≤ 2분 (pgTAP 빠름)
+- PR 머지 전 필수 통과 (보안 critical)
+
+## ✔️ DoD
+- [ ] 모든 시나리오 통과 · CI 게이트 설정
+
+## 🔗 Dependencies
+- Depends: T-DB-019 (RLS 정책) · 모든 T-DB-001~012 (테이블)
+- Blocks: Phase 2 종료 판정 · Phase 3 진입
+````
+
+---
+
+## Few-Shot Sample 36 / 38
+
+````markdown
+---
+name: Test Task (Performance)
+title: "[Test] T-TEST-019: SQL 인덱스 EXPLAIN ANALYZE — p95 목표 달성 검증"
+labels: ['test', 'phase:2', 'step:3', 'priority:must', 'performance']
+---
+
+## 🎯 Summary
+- Task ID: T-TEST-019 · 주요 쿼리 3종의 EXPLAIN ANALYZE 결과가 REQ-NF-008/009/010 목표 충족 증명
+
+## 🔗 References
+- SRS REQ-NF-008 (뉴스 200ms) · REQ-NF-009 (채용 300ms) · REQ-NF-010 (WAU 100ms)
+- T-DB-018 (인덱스) · T-NFR-003 (NFR 엔지니어링 Task)
+
+## ✅ Task Breakdown
+- [ ] 시드 스크립트 `supabase/tests/perf/seed.sql` — `news_articles` 10k · `job_posts` 100k · `subscribers` 1k · `email_events` 10k
+- [ ] `ANALYZE` 실행 (통계 갱신)
+- [ ] 3개 쿼리 각 10회 실행 + p95 계산:
+  - 뉴스 피드: `SELECT * FROM news_articles WHERE is_published=true ORDER BY published_at DESC LIMIT 5`
+  - 채용 필터: `SELECT * FROM job_posts WHERE cargo_category='sales' AND status='approved' ORDER BY source_trust_score DESC, deadline LIMIT 20`
+  - WAU: `SELECT COUNT(*) FROM subscribers WHERE status='verified' AND last_active_at >= now() - interval '7 days'`
+- [ ] EXPLAIN ANALYZE 결과가 Bitmap Index Scan / Index Scan 사용 (Seq Scan 배제) 확인
+- [ ] 결과를 `docs/srs/tasks/reviews/perf-baseline-phase-2.md` 에 기록
+
+## 📋 AC
+- **S1**: 뉴스 피드 p95 ≤ 200ms
+- **S2**: 채용 필터 p95 ≤ 300ms
+- **S3**: WAU 쿼리 p95 ≤ 100ms
+- **S4**: 세 쿼리 모두 Index Scan 사용 (Seq Scan fallback 차단)
+
+## ⚙️ Constraints
+- Supabase Free 리소스 한계 고려 · 로컬 Docker 스택에서 먼저 검증
+- 시드 후 DB 크기 ≤ 100MB (Supabase Free 500MB 의 20%)
+
+## ✔️ DoD
+- [ ] AC 4종 · baseline 기록 커밋
+
+## 🔗 Dependencies
+- Depends: T-DB-018 · T-DB-001·002·003 · Blocks: T-NFR-003 (NFR 엔지니어링 완료 판정)
+````
+
+---
+
+## Few-Shot Sample 37 / 38
+
+````markdown
+---
+name: NFR Task
+title: "[NFR] T-NFR-003: SQL 인덱스 성능 NFR 엔지니어링 — 지속 모니터링 파이프라인"
+labels: ['nfr', 'phase:2', 'step:4', 'priority:must', 'performance']
+---
+
+## 🎯 Summary
+- Task ID: T-NFR-003 · Phase 2 이후에도 인덱스 성능을 지속 측정·알림할 수 있는 엔지니어링 장치
+
+## 🔗 References
+- SRS REQ-NF-008·009·010 · T-TEST-019 (초기 baseline)
+
+## ✅ Task Breakdown
+- [ ] Supabase `pg_stat_statements` extension 활성화
+- [ ] 월 1회 정기 `scripts/perf-audit.ts` — 핵심 3 쿼리의 mean/p95/p99 수집
+- [ ] 임계치 초과 시 Loops `tpl-admin-alert` 로 알림 (T-FEAT-411 연계)
+- [ ] 결과를 `ingest_logs` 에 `source='perf_audit'` 로 기록 (T-DB-010 재사용)
+- [ ] GitHub Actions 월 1회 cron 또는 Vercel Cron 추가 (Phase 5 이후)
+
+## 📋 AC
+- **S1**: `pg_stat_statements` 쿼리 가능
+- **S2**: perf-audit 스크립트 실행 → 3 쿼리 통계 출력
+- **S3**: 의도적 Seq Scan 시나리오 생성 → 알림 트리거
+- **S4**: 1달 데이터 축적 후 트렌드 분석 가능
+
+## ⚙️ Constraints
+- Supabase Free 플랜에서 `pg_stat_statements` 지원 확인 필요
+- 분석 결과는 Founder 만 열람 (개인정보 없음)
+
+## ✔️ DoD
+- [ ] AC 4종 · baseline report 커밋
+
+## 🔗 Dependencies
+- Depends: T-DB-010 · T-DB-018 · T-TEST-019 · Blocks: Phase 5+ 지속 운영
+````
+
+---
+
+## Few-Shot Sample 38 / 38
+
+````markdown
+---
+name: NFR Task
+title: "[NFR] T-NFR-012: 보안 기초 엔지니어링 — RLS + Service Role + Magic Link 1h 만료"
+labels: ['nfr', 'phase:2', 'step:4', 'priority:must', 'security']
+---
+
+## 🎯 Summary
+- Task ID: T-NFR-012 · Phase 2 종료 전 보안 기초 3요소(RLS · Service Role 격리 · Magic Link 1h) 엔지니어링 완성 + 증거 문서화
+
+## 🔗 References
+- SRS REQ-NF-040~045 · C-TEC-012 · C-TEC-013 · T-DB-019 · T-API-008
+
+## ✅ Task Breakdown
+- [ ] **RLS 인벤토리**: Supabase Dashboard → Policies 전수 캡처 · 12 테이블 전부 `rls: true` 문서화
+- [ ] **Service Role 검증**: `pnpm build` 후 `.next/static/` grep `SUPABASE_SERVICE_ROLE_KEY` → 0건 스냅샷
+- [ ] **Magic Link 1h**: Supabase Dashboard `Auth → Providers → Email` OTP Expiry = 3600초 스크린샷
+- [ ] **ADMIN_EMAIL_WHITELIST**: `admin_users` 테이블에 Founder 이메일만 시드 확인
+- [ ] 보안 체크리스트 문서: `docs/srs/tasks/reviews/phase-2-security-evidence.md`
+  - RLS 정책 인벤토리
+  - Service Role 격리 증거 (번들 grep 결과)
+  - Magic Link 설정 스크린샷 링크
+  - gitleaks CI 최초 실행 로그 링크 (T-NFR-014)
+  - TLS 1.2+ 강제 검증 (Vercel 기본)
+
+## 📋 AC
+- **S1**: 12 테이블 전부 RLS 활성
+- **S2**: 클라이언트 번들에 Service Role Key 문자열 0건
+- **S3**: Magic Link OTP expiry ≤ 3600초
+- **S4**: admin_users 시드 이메일 1건 이상
+
+## ⚙️ Constraints
+- 보안 기초는 Phase 2 종료 블로커 · 불통과 시 Phase 3 진입 금지
+- 증거 문서는 커밋 가능 (secret 제외)
+
+## ✔️ DoD
+- [ ] AC 4종 충족 · 보안 체크리스트 문서 커밋 · 사용자(Founder) 서명
+
+## 🔗 Dependencies
+- Depends: T-DB-019 · T-API-008 · T-DB-004 · T-NFR-014 (gitleaks)
+- Blocks: **Phase 2 종료 판정** · Phase 3 진입
+
+---
+
+## 1. Phase 2 Micro 추출 완료 ✅
+
+위 38개 Task 가 Phase 2 의 전체 Micro 추출물. 별도 확장 대상 없음.
+
+**다음 단계**:
+1. Phase 2 사후 검토: [`reviews/phase-2-review.md`](./reviews/phase-2-review.md)
+2. 학습 키워드 수집: [`learning-keywords.md`](./learning-keywords.md)
+3. Phase 3 (UI Mock) Micro 세션 진입
 
 ---
 
@@ -1356,11 +2290,12 @@ CREATE POLICY job_clicks_insert ON job_clicks
 
 ## Changelog
 
-- **2026-04-18 v1.1 (Wave 2)**: Few-Shot 10개 추가 (Sample 8~17). 커버리지 7/33 → 17/33. Wave 2 선정 기준: cross-cutting blocker 영향 + Phase 2 DoD 직접 연결.
-  - A 블록 +3: T-INFRA-009 (env.example) · T-INFRA-010 (ESLint CI) · T-INFRA-002 (Tailwind+arum+shadcn)
-  - B 블록 +7: T-DB-013 (enum) · T-DB-002 (job_posts) · T-DB-003 (subscribers) · T-DB-004 (admin_users) · T-DB-011 (glossary seed) · T-DB-018 (indexes) · T-DB-019 (RLS policies)
-  - 다음 세션에서 남은 16개 확장 예정
-- **2026-04-18 v1.0 (Wave 1)**: 최초 작성. Phase 2 의 33 Task 중 Few-Shot 대표 7개 풀 템플릿 샘플로 작성.
+- **2026-04-18 v1.2 (Wave 3 완결)**: Few-Shot 21개 추가 (Sample 18~38). 커버리지 17/38 → **38/38 ✅**. Phase 2 Micro 추출 완료. Wave 3 구성:
+  - A 블록 +7: T-INFRA-003 (폰트) · 004 (motion libs) · 006 (migration naming CI) · 007 (lib 뼈대) · 008 (Vercel) · 013 (SiteHeader/Footer) · 014 (remotePatterns)
+  - B 블록 +10: T-DB-005·006 (clicks) · 007 (daily_digests 멱등성) · 008 (subscription_events 13mo §50) · 009 (email_events webhook) · 010 (ingest_logs) · 012 (cargo_career_links 14개 시드) · 015·016 (트리거 2종) · T-MOCK-006 (glossary seed JSON)
+  - C 블록 +4: T-TEST-002 (RLS negative suite) · T-TEST-019 (EXPLAIN ANALYZE) · T-NFR-003 (perf 지속) · T-NFR-012 (보안 기초)
+- **2026-04-18 v1.1 (Wave 2)**: Few-Shot 10개 추가 (Sample 8~17). 커버리지 7/33 → 17/38.
+- **2026-04-18 v1.0 (Wave 1)**: 최초 작성. Phase 2 대표 7개 Few-Shot.
 
 ---
 
