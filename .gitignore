@@ -1,0 +1,59 @@
+# ---- OS / Editor ----
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ---- Env / Secrets (절대 커밋 금지) ----
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+secrets/
+
+# ---- Node / pnpm (Phase 2 이후 web/) ----
+node_modules/
+.pnpm-store/
+pnpm-debug.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ---- Next.js ----
+.next/
+out/
+build/
+dist/
+.vercel/
+
+# ---- TypeScript / bundler caches ----
+*.tsbuildinfo
+.turbo/
+.rollup.cache/
+.cache/
+
+# ---- Testing / coverage ----
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+
+# ---- Supabase local ----
+supabase/.branches/
+supabase/.temp/
+**/supabase/**/dump.sql
+
+# ---- Claude / local agent state ----
+.claude/
+# (단, 프로젝트 간 공통 Claude 지시는 홈 ~/.claude 에 있음. 로컬 세션 캐시만 제외)
+
+# ---- Logs ----
+*.log
+logs/
+
+# ---- Misc ----
+*.local
+tmp/
