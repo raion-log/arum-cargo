@@ -10,31 +10,45 @@
 
 | 항목 | 값 |
 |---|---|
-| **현재 Phase** | Phase 1 완료 → **Phase 2 착수 대기** |
-| **현재 CP** | CP-01 Project Foundation (0/13) 대기 |
-| **SRS 버전** | **Rev 1.1** (ADR-009 타겟 재정렬 반영, 2026-04-19) |
+| **현재 Milestone** | **M1** — 프런트엔드 뼈대 + 화려한 홈 + Mock 화면 (0/~35 Task · 2주 예상) |
+| **현재 Phase** | Phase 1 완료 → **M1 착수 대기** |
+| **현재 CP** | CP-01 Project Foundation (0/13) 대기 — M1 핵심 |
+| **SRS 버전** | **Rev 1.1** (ADR-009 타겟 재정렬 + 범위 정리, 2026-04-19) |
 | **Primary 타겟** | **A1 정하늘 (카고 취준생)** · Secondary: C1 이지훈 (2~5년차) |
+| **배포 전략** | **비공개 리뷰용** Vercel URL · Coming Soon 표시 없음 · 공개 배포 아님 |
 | **MVP 예상 기간** | 10~12주 (CP-12 🏁 목표) |
 | **월 운영비** | ₩0 (실 구축 전) / 예상 ₩0 (Phase 5 구동 후) |
 
 ---
 
-## 📈 Checkpoint 진행도 (12/12)
+## 🎯 Milestone 진행 (3/3)
 
-| Phase | CP | 이름 | 진행 | 상태 |
-|---|---|---|---|---|
-| 2 | CP-01 | Project Foundation | `░░░░░░░░░░` 0/13 | 🔜 다음 |
-| 2 | CP-02 | Data Model Baseline | `░░░░░░░░░░` 0/20 (DB-012 `review_one_liner` 컬럼 확장) | ⏳ 대기 |
-| 2 | 🚪 CP-03 | Phase 2 Quality Gate | `░░░░░░░░░░` 0/6 | ⏳ 대기 |
-| 3 | CP-04 | Mock UI 렌더 | `░░░░░░░░░░` 0/19 (Rev 1.1 −FR-027) | ⏳ 대기 |
-| 3 | 🚪 CP-05 | Phase 3 Quality Gate | `░░░░░░░░░░` 0/4 | ⏳ 대기 |
-| 4 | CP-06 | News Ingest Live | `░░░░░░░░░░` 0/10 (국내 RSS → Naver API primary) | ⏳ 대기 |
-| 4 | CP-07 | Jobs Ingest Live | `░░░░░░░░░░` 0/10 | ⏳ 대기 |
-| 4 | CP-08 | Admin Workflow | `░░░░░░░░░░` 0/9 (Rev 1.1 −FR-023·−FR-052) | ⏳ 대기 |
-| 4 | 🚪 CP-09 | Phase 4 Quality Gate | `░░░░░░░░░░` 0/10 | ⏳ 대기 |
-| 5 | CP-10 | Email Growth Loop Live | `░░░░░░░░░░` 0/12 (Rev 1.1 −FR-039) | ⏳ 대기 |
-| 5 | CP-11 | Admin Dashboard Live | `░░░░░░░░░░` 0/10 (KPI 4종 축소) | ⏳ 대기 |
-| 5 | 🏁 CP-12 | MVP 완성 (Phase 5 QG) | `░░░░░░░░░░` 0/14 | ⏳ 대기 |
+| M | 이름 | 기간 | Task | 배포 상태 | 진행 |
+|---|---|---|---|---|---|
+| **M1** 🔜 | 프런트엔드 뼈대 + 화려한 홈 + Mock 화면 | 2주 | ~35 | Vercel 비공개 리뷰 URL | `░░░░░░░░░░` 0% |
+| M2 | Jobs Engine (실 DB + ingest) | 3주 | ~40 | 채용 필터 live | `░░░░░░░░░░` 0% |
+| M3 🏁 | News + Email + Admin Dashboard (MVP) | 4주 | ~60 | MVP 완성 · WAU 가동 | `░░░░░░░░░░` 0% |
+
+상세: [MILESTONES.md](./MILESTONES.md)
+
+---
+
+## 📈 Checkpoint 진행도 (12 CP · M 태그)
+
+| M | Phase | CP | 이름 | 진행 | 상태 |
+|---|---|---|---|---|---|
+| **M1** | 2 | CP-01 | Project Foundation (Infra 14 중 M1 11 · 나머지 M2/M3) | `░░░░░░░░░░` 0/13 | 🔜 다음 |
+| M2 | 2 | CP-02 | Data Model Baseline | `░░░░░░░░░░` 0/20 | ⏳ M2 |
+| M2 | 2 | 🚪 CP-03 | Phase 2 Quality Gate | `░░░░░░░░░░` 0/6 | ⏳ M2 게이트 |
+| **M1** | 3 | CP-04 | Mock UI 렌더 | `░░░░░░░░░░` 0/19 | ⏳ M1 |
+| **M1** | 3 | 🚪 CP-05 | Phase 3 Quality Gate | `░░░░░░░░░░` 0/4 | ⏳ M1 게이트 |
+| M3 | 4 | CP-06 | News Ingest Live | `░░░░░░░░░░` 0/10 | ⏳ M3 |
+| M2 | 4 | CP-07 | Jobs Ingest Live | `░░░░░░░░░░` 0/10 | ⏳ M2 |
+| M2·M3 | 4 | CP-08 | Admin Workflow (M2 승인 큐 · M3 Pick) | `░░░░░░░░░░` 0/9 | ⏳ 분할 |
+| M3 | 4 | 🚪 CP-09 | Phase 4 Quality Gate | `░░░░░░░░░░` 0/10 | ⏳ M3 |
+| M3 | 5 | CP-10 | Email Growth Loop Live | `░░░░░░░░░░` 0/12 | ⏳ M3 |
+| M3 | 5 | CP-11 | Admin Dashboard Live | `░░░░░░░░░░` 0/10 | ⏳ M3 |
+| M3 | 5 | 🏁 CP-12 | MVP 완성 (Phase 5 QG) | `░░░░░░░░░░` 0/14 | ⏳ M3 게이트 |
 
 전체 Task: **0 / 146 완료 (0%) — Rev 1.1 축소 · 원 150 − 4 제거 (FR-023/027/039/052)**
 
@@ -42,37 +56,36 @@
 
 ## 🚧 현재 블로커 (사용자 액션 필요)
 
-Phase 2 착수 전 해결:
+**M1 착수 전** (유일 · 경량):
 
-- [ ] **Supabase 계정 + 신규 프로젝트 `arumcargo-prod` 생성** (region Seoul) → T-INFRA-005 선결
-- [ ] **Vercel 계정 + GitHub `raion-log/arum-cargo` 연결** → T-INFRA-008 선결
-- [ ] **사업자등록증·주소·연락처 확보** → T-INFRA-013 Footer · `/privacy` 법정 페이지 데이터
+- [ ] **Vercel 계정 + GitHub `raion-log/arum-cargo` 연결** → T-INFRA-008 선결 (비공개 리뷰 URL 준비)
+- 그 외 블로커 없음 — M1 은 DB/외부 API/이메일 없음
 
-Phase 3 착수 전 (여유):
+**M2 착수 전** (M1 완료 후):
 
-- [ ] OQ-C1 About 페이지 초안 3개 중 1개 선택
-- [ ] OQ-C2 에디터 Pick 샘플 5개 톤 검수
-
-Phase 4 착수 전 (3~4주 여유):
-
-- [ ] 네이버 개발자센터 앱 등록 + 키 발급
+- [ ] Supabase 계정 + 신규 프로젝트 `arumcargo-prod` 생성 (region Seoul)
 - [ ] 워크넷 API 키 발급 (2~3일 승인)
 - [ ] 사람인 API 키 발급
+
+**M3 착수 전** (M2 완료 후):
+
+- [ ] 네이버 개발자센터 앱 등록 + 키 발급
 - [ ] Google AI Studio Gemini API 키 발급 (무료)
-- [ ] 해외 RSS 피드 URL 3종 확정 (Loadstar/ACN UK/FlightGlobal)
-
-Phase 5 착수 전:
-
 - [ ] Loops.so 계정 + API 키 + webhook secret
+- [ ] 해외 RSS 피드 URL 3종 확정 (Loadstar/ACN UK/FlightGlobal)
+- [ ] 사업자등록증·주소·연락처 (§50 이메일 footer · 법정 페이지)
 - [ ] Vercel API 토큰 (Analytics)
+- [ ] ADMIN_EMAIL_WHITELIST 확정
+- [ ] OQ-C1 About 페이지 초안 1개 선택 (이미 Rev 1.1 About 1줄 반영됨)
+- [ ] OQ-C2 에디터 Pick 샘플 5개 톤 검수
 
 ---
 
 ## ⏭️ 다음 3 액션 (권장)
 
-1. **학습 H 7개 집중 (주말 6시간)** — pgTAP · plpgsql trigger · Supabase RLS · CLI · `server-only` · `@supabase/ssr` · EXPLAIN ANALYZE ([learning-keywords.md §8](./learning-keywords.md))
-2. **Supabase 계정 + 프로젝트 생성** → T-INFRA-005 블로커 해제
-3. **Phase 2 착수** — T-INFRA-001 (Next.js init) 부터 시작
+1. **Vercel 계정 + 레포 연결** (30분) — M1 유일 블로커
+2. **M1 착수** — T-INFRA-001 (Next.js init) → INFRA-002~014 + UI-001~009 + MOCK-001~006 순차
+3. M1 학습 집중 — Next.js App Router · Tailwind `arum.*` · shadcn CLI · Framer Motion (DB/Supabase 학습은 M2 전으로 유예)
 
 ---
 
