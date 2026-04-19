@@ -26,13 +26,13 @@
 | **CP-01** | Project Foundation | 2 | 13 | — | 0% |
 | **CP-02** | Data Model Baseline | 2 | 20 | — | 0% |
 | **CP-03** | 🚪 Phase 2 Quality Gate | 2 | 6 | ✅ 필수 | 0% |
-| **CP-04** | Mock UI 렌더 | 3 | 20 | — | 0% |
+| **CP-04** | Mock UI 렌더 | 3 | 19 (Rev 1.1 −FR-027) | — | 0% |
 | **CP-05** | 🚪 Phase 3 Quality Gate | 3 | 4 | ✅ 필수 | 0% |
 | **CP-06** | News Ingest Live | 4 | 10 | — | 0% |
 | **CP-07** | Jobs Ingest Live | 4 | 10 | — | 0% |
-| **CP-08** | Admin Workflow (뉴스/채용 승인 + Gemini 리서치) | 4 | 11 | — | 0% |
+| **CP-08** | Admin Workflow (뉴스/채용 승인) | 4 | 9 (Rev 1.1 −FR-023·−FR-052) | — | 0% |
 | **CP-09** | 🚪 Phase 4 Quality Gate | 4 | 10 | ✅ 필수 | 0% |
-| **CP-10** | Email Growth Loop Live | 5 | 13 | — | 0% |
+| **CP-10** | Email Growth Loop Live | 5 | 12 (Rev 1.1 −FR-039) | — | 0% |
 | **CP-11** | Admin Dashboard Live | 5 | 10 | — | 0% |
 | **CP-12** | 🏁 MVP 완성 (Phase 5 Quality Gate) | 5 | 14 | ✅ 최종 | 0% |
 
@@ -141,22 +141,22 @@
 - FR-024 마감 7일 자동 archived
 - FR-026 공고 클릭 beacon
 
-### CP-08 · Admin Workflow (뉴스/채용 승인 + Gemini 리서치)
+### CP-08 · Admin Workflow (뉴스/채용 승인)
 
-**완료 기준**: 관리자가 뉴스 에디터 Pick 작성 → 승인 → 이메일 블록 렌더 E2E · 채용 승인 큐 동작 · **Gemini YouTube 카고 채널 자막 취합 리서치 툴 MVP**
+**완료 기준**: 관리자가 뉴스 에디터 Pick 작성 → 승인 → 이메일 블록 렌더 E2E · 채용 승인 큐 동작
 
-**포함 Task (11)**:
+**포함 Task (9, Rev 1.1 −2)**:
 - FR-007 뉴스 클릭 beacon
-- FR-008 에디터 Pick 저장 + history
+- FR-008 에디터 Pick 저장 + history (Gemini 초안 + Founder 편집 하이브리드 · C-TEC-016)
 - FR-009 에디터 Pick 이메일 HTML 빌더
 - FR-010 용어 SSR 래핑
 - FR-022 /admin/jobs 승인 큐
-- FR-023 일괄 승인 단축키
+- ~~FR-023 일괄 승인 단축키~~ — Rev 1.1 제거
 - FR-044 /admin/news 에디터 Pick 작성 (Phase 5 일부 선행)
 - FR-048 ingest_logs 기록
 - FR-049 CRON_SECRET middleware
 - FR-050 last_active_at 자동 갱신
-- **FR-052 Gemini Search + YouTube 자막 취합 (관리자 리서치 참고용 · ADR-009)**
+- ~~FR-052 Gemini YouTube grounding~~ — Rev 1.1 철회 (Phase 5.5+ C-TEC-025 복귀)
 
 ### CP-09 · 🚪 Phase 4 Quality Gate
 

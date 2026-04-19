@@ -103,7 +103,7 @@ Agentic 프로그래밍(Claude Code)이 참조할 **기술 스택 고정 규약*
 | C-TEC-014 | 이메일 엔진은 **Loops.so (Transactional 전용)**. Sendgrid·Mailgun·AWS SES·Campaign 빌더 사용 금지. OQ-M6(§50 검증) 실패 시 Phase 6에서 **Resend + 자체 도메인** 으로 전환 | `loops` NPM client or REST | 2,000 contacts 무료·§50 필드 주입 가능성 검증 중 |
 | **[AI / Translation]** | | | |
 | C-TEC-015 | 번역 엔진은 **Provider-Agnostic facade 구조** (`src/lib/api/translation/index.ts`) 위에 **MVP는 Gemini 어댑터 1종만 구현** (`gemini.ts`). Phase 5 MVP 기본값 `TRANSLATION_PROVIDER=gemini` (Gemini 1.5 Flash 무료 티어). 공통 파라미터 `temperature=0.2`, `max_tokens=500`, 동일 system prompt. `openai` / `anthropic` 어댑터는 **Phase 5.5+ OQ-R17 실측 결과에 따라 도입** (MVP에서는 미구현 · env 값 지정 시 런타임 에러 반환). Vercel AI SDK 없이 각 Provider SDK 직접 사용 | `@google/generative-ai@^0.21` | 벤더 lock-in 회피 · Gemini 무료 티어로 C-COST-002 $5 cap 모순 해소 · facade 구조로 Phase 5.5+ provider 추가 시 코드 변경 최소화 |
-| C-TEC-016 | **뉴스 번역 파이프라인의 LLM 호출은 카고 원문 요약 한 가지 용도만 허용**. 에디터 Pick 자동 생성·챗봇·사용자-facing 콘텐츠 생성 금지. 관리자 전용 내부 리서치 도구(C-TEC-025)는 예외이며 **사용자 공개 콘텐츠에 LLM 산출물을 직접 게시하지 않는다** | — | 에디터 Pick의 "현직자 voice" Moat 보호 (P05) |
+| C-TEC-016 | **뉴스 번역 파이프라인의 LLM 호출은 카고 원문 요약 한 가지 용도만 허용**. 챗봇·사용자-facing 자동 콘텐츠 생성 금지. **에디터 Pick 은 Gemini 초안 생성 허용되나 Founder (11년차 현직자) 톤 편집 · 승인 후에만 게시** (자동 무편집 게시 금지). Pick 편집 흔적은 `editor_pick_history` 트리거(T-DB-015) 로 자동 기록. 관리자 전용 내부 리서치 도구(C-TEC-025)는 예외 | — | 에디터 Pick의 "현직자 voice" Moat 보호 (P05). Rev 1.1 에서 "Gemini 초안 + 사람 편집" 하이브리드 명시 |
 | **[Scheduling / Cron]** | | | |
 | C-TEC-017 | Cron은 **Vercel Cron (일 1회 digest) + GitHub Actions (ingest 3종)** 하이브리드. 제3의 외부 스케줄러(EventBridge·cron-job.org) 도입 금지 | `vercel.json`, `.github/workflows/*.yml` | Vercel Hobby 일 2회 한도 보완 |
 | C-TEC-018 | 모든 cron API는 `Authorization: Bearer ${CRON_SECRET}` 검증. 검증 실패 시 401 반환 | — | REQ-NF-048 |
@@ -608,7 +608,7 @@ sequenceDiagram
 | ID | Title | Source | Priority | Type | Acceptance Criteria | Verification |
 |---|---|---|---|---|---|---|
 | REQ-FUNC-010 | 네이버 뉴스 14 카고 키워드 ingest | REF-03 §3.1, REF-05 §3 / F1 / US-I1 | Must | F | Given 14 키워드 config, When GitHub Actions cron 06:00/18:00 KST 트리거, Then 각 쿼리 호출 후 items 수집 ≥ 0. 실패 시 3회 backoff 재시도 후 `ingest_logs.status='partial'` | unit(쿼리 파서), integration(Naver mock), E2E(실제 cron 1회) |
-| REQ-FUNC-011 | 국내 카고 RSS 4종 ingest | REF-03 §3.1, REF-05 §4.1 / F1 | Must | F | Given 카고프레스·CargoNews·Forwarder KR·Air Cargo News KR RSS config, When cron 실행, Then 각 피드 parse 후 `news_articles` insert `is_published=false` | integration(rss-parser mock), E2E |
+| REQ-FUNC-011 | 국내 카고 뉴스 보조 ingest (Rev 1.1 실측 후 축소) | REF-03 §3.1, REF-05 §4.1 / F1 | Should | F | Given 국내 뉴스 primary 는 REQ-FUNC-010 Naver News API. 실측(2026-04-19): 카고프레스 RSS 미제공·카고뉴스 월간·포워더케이알 커뮤니티 사이트. When 카고프레스 HTML parse 가능성 검토 (Best Effort, CON-07 준수 범위 내 제목+링크만), Then 성공 시 news_articles insert. 실패 시 Naver API 만으로 운영 | integration (Best Effort) |
 | REQ-FUNC-012 | 해외 카고 RSS 3종 ingest (Loadstar·ACN UK·FlightGlobal) | REF-03 §3.1, REF-05 §4.1 / F1 | Must | F | Given 3개 영문 피드, When cron 실행, Then 각 item의 `content:encoded` 또는 Readability 파싱 후 번역 파이프 전달 | integration, E2E |
 | REQ-FUNC-013 | 뉴스 exclude 키워드 필터 (승무원·조종사·정비 등 8종) | REF-03 §3.1, REF-05 §3.4 / CON-05 | Must | F | Given ingest 된 title/description, When `EXCLUDE_RE=/승무원\|객실\|지상직\|조종사\|부기장\|정비사\|기장\|항공정비/` 매칭, Then skip + `ingest_logs.records_skipped++` | unit(정규식 테스트 20 케이스), E2E |
 | REQ-FUNC-014 | dedupe_hash 중복 차단 | REF-04 §4.3 / F1 | Must | F | Given `sha256(source_name + title + pubDate)` hash, When DB unique 위반, Then `on conflict do nothing` + `records_skipped++` | integration(동일 item 2회 insert) |
@@ -652,11 +652,11 @@ sequenceDiagram
 | REQ-FUNC-113 | `/jobs/[slug]` 상세 + JobPosting schema | REF-02 §7 | Should | F+I | Given 카드 클릭, When 상세 진입, Then summary 2~3문장 + 원문 CTA + JSON-LD 주입 | Rich Results Test |
 | REQ-FUNC-114 | `/admin/jobs` 승인 큐 | REF-02 §6.3 | Must | F | Given `status='pending'` 공고, When 관리자 UI 진입, Then 좌측 리스트 + 우측 상세 + 승인/거부(이유 선택) 버튼 | Playwright |
 | REQ-FUNC-115 | 거부 이유 선택 enum | REF-02 §6.3 | Must | D | Given reject 시, When 사유 선택, Then 화물 무관/학원 광고/신뢰도 불명/중복/기타 중 하나 저장 | DB check |
-| REQ-FUNC-116 | 관리자 일괄 승인 단축키 (신뢰도 5) | REF-02 §6.3 | Could | F | Given 신뢰도 5 pending 카드들, When 단축키 발동, Then 전체 approved 전환 + `admin_actions` 로그 | Playwright |
+| ~~REQ-FUNC-116~~ | ~~관리자 일괄 승인 단축키~~ — **Rev 1.1 제거** (ADR-009 타겟 재정렬 · 1인 운영 편의 기능 · Could priority 가치 낮음) | — | — | — | — | — |
 | REQ-FUNC-117 | 마감 7일 후 `archived` 자동 전이 | REF-04 §5.2 | Must | F | Given `status='approved' AND deadline < now() - 7d`, When 일 cron 실행, Then status='archived' | DB function test |
 | REQ-FUNC-118 | `/jobs` 빈 상태 메시지 + 구독 CTA | REF-02 US-A1-F1 | Must | F+I | Given approved = 0, When 진입, Then "관리자 검수 중" + 구독 CTA | Playwright |
 | REQ-FUNC-119 | 공고 클릭 beacon + 원문 이동 | REF-02 §3.2, US-A1-3 | Must | F | Given 카드 CTA 클릭, When beacon 전송, Then `job_clicks` INSERT + `_blank noopener noreferrer` | Playwright |
-| REQ-FUNC-120 | `years_experience` 기본 하이라이트 (C1 2~5년) | REF-02 §3.2 | Should | F+I | Given URL 없을 때, When 렌더, Then `years_experience_min/max` 교집합 2~5 카드에 서브틀 bg | Playwright |
+| ~~REQ-FUNC-120~~ | ~~years_experience 하이라이트 (C1 2~5년)~~ — **Rev 1.1 제거** (ADR-009 Primary = A1 취준생 전환 · 2~5년차 강조는 Secondary C1 대상, MVP 에서 불필요) | — | — | — | — | — |
 
 #### 4.1.c Email Growth Loop (REQ-FUNC-2XX)
 
@@ -680,15 +680,15 @@ sequenceDiagram
 | REQ-FUNC-215 | Loops 발송 rate limit sleep(150ms) | REF-06 §5.2, REF-05 §7.4 | Must | F | Given 1,000 구독자 루프, When loopsClient.send 후, Then `await sleep(150)` 삽입 | unit(sleep 호출 검증) |
 | REQ-FUNC-216 | `/api/webhooks/loops` 이벤트 수신 | REF-05 §7.6, REF-06 US-E1-4 | Must | F+I | Given Loops webhook POST + HMAC, When 검증 통과, Then email_events insert → trigger `update_subscriber_last_active` 발동 | integration(HMAC) |
 | REQ-FUNC-217 | `subscribers.last_active_at` 자동 갱신 (trigger) | REF-04 §5.4 | Must | F | Given email_events `opened/clicked` insert, When trigger fire, Then subscribers.last_active_at = event.occurred_at | DB trigger test |
-| REQ-FUNC-218 | 공유 루프 `/share/[id]?ref=<subscriber_id>` | REF-06 §8 | Should | F+I | Given C1 공유 링크 클릭 후 타 구독자 signup, When POST subscribe with referrer_token, Then `referrer_subscriber_id` FK 저장 | integration |
-| REQ-FUNC-219 | 공유 OG 카드 (제목 + Pick + 출처) | REF-06 §8.2 | Should | I | Given `/share/[id]`, When 소셜 미리보기, Then og:title, og:description, og:image meta 삽입 | Open Graph 검증 |
+| ~~REQ-FUNC-218~~ | ~~공유 루프 `/share/[id]?ref=`~~ — **Rev 1.1 제거** (ADR-009 Primary = A1 취준생 · 공유가치 낮음 · 취업 후 이탈 구조) | — | — | — | — | — |
+| ~~REQ-FUNC-219~~ | ~~공유 OG 카드~~ — **Rev 1.1 제거** (REQ-FUNC-218 공유 루프 제거에 따른 종속 삭제) | — | — | — | — | — |
 
 #### 4.1.d UI/UX Spec (REQ-FUNC-3XX)
 
 | ID | Title | Source | Priority | Type | Acceptance Criteria | Verification |
 |---|---|---|---|---|---|---|
 | REQ-FUNC-300 | Tailwind `arum.*` 토큰 네임스페이스 | REF-07 §2, CON-10 | Must | C | Given tailwind.config.ts, When theme.extend.colors, Then `arum.ink/navy/slate/sky/blue/blob/cloud/mist/fog/urgent/success/pick` 키 존재 + `raion.*` 키 부재 | lint rule (eslint-plugin-tailwindcss) |
-| REQ-FUNC-301 | Bento Grid 랜딩 Hero (Framer Motion 스태거 리빌) | PRD 06 §4.2, C-TEC-003 | Should | F+I | Given `/` 진입, When 렌더, Then `grid-cols-4 grid-rows-3` (데스크톱) 카드 6종 (Hero-Pick 3x2, News-Stack 1x2, Job-Spotlight 2x1, Metric-Live 1x1, Email-CTA 4x1) + Framer Motion `staggerChildren`(0.08s) `whileInView` fade-in | Playwright, visual regression |
+| REQ-FUNC-301 | Bento Grid 랜딩 Hero (Framer Motion 스태거 리빌) — Rev 1.1 재배치 | PRD 06 §4.2, C-TEC-003, ADR-009 | Should | F+I | Given `/` 진입, When 렌더, Then `grid-cols-4 grid-rows-3` (데스크톱) 카드 5종 (**ADR-009 A1 Primary 반영: Job-Spotlight 확대 2x2 · Hero-Pick 2x2 · News-Stack 1x2 · Email-CTA 4x1 · 14사 공식채용 그리드 preview 4x1**). ~~Metric-Live 1x1 카드 제거 (Rev 1.1 · 취준생 대상 WAU 숫자 가치 없음)~~ + Framer Motion `staggerChildren`(0.08s) `whileInView` fade-in | Playwright, visual regression |
 | REQ-FUNC-302 | Gradient Blob 배경 애니메이션 (CSS-first) | PRD 06 §4.3, C-TEC-003 | Should | F+I | Given Hero 섹션, When 렌더, Then radial-gradient 3겹 + `filter:blur(80px)` + CSS `@keyframes arum-blob-drift` 18s ease-in-out infinite alternate + `prefers-reduced-motion: reduce` 쿼리에서 animation off (blur만 유지) | Playwright(motion matcher), axe |
 | REQ-FUNC-303 | Scroll Parallax Hero (Framer Motion `useScroll`) | PRD 06 §4.4, C-TEC-003 | Should | F+I | Given Hero 스크롤, When `useScroll` + `useTransform`, Then 3레이어 y축 `progress`를 각각 `{-20, -60, -120}px`에 매핑 (총 ≤ 120px) + `useReducedMotion()` true 시 transform bypass | Playwright |
 | REQ-FUNC-304 | 3D Carousel `/about` 또는 `/showcase` 하단 | PRD 06 §1.2 | Could | F+I | Given `/about` 하단 섹션, When 스크롤 진입, Then CSS 3D `transform-style: preserve-3d` + Framer Motion `useMotionValue` 기반 회전. WebGL·GSAP 없음 | Playwright |
@@ -1664,15 +1664,31 @@ classDiagram
 
 ## Changelog
 
-- **2026-04-19 Rev 1.1 (Amendment 1 — 타겟 재정렬)**: 2026-04-19 냉정 유용성 감사 결과 기반 [ADR-009](../adr/ADR-009-target-realignment-applicants-primary.md) 반영.
+- **2026-04-19 Rev 1.1 (Amendment 1 — 타겟 재정렬 + 범위 정리)**: 2026-04-19 냉정 유용성 감사 + RSS/API 실측 + 사용자 범위 정리 결정 기반 [ADR-009](../adr/ADR-009-target-realignment-applicants-primary.md) 반영.
   1. **타겟 Primary 재정렬**: C1 이지훈 (2~5년차 현직자) → **A1 정하늘 (카고 취준생)** Primary 로 전환. C1 은 Secondary. §1.1 Purpose 문구 변경.
-  2. **에디터 Pick 부담 경감**: 매일 3~4개 → **주 3회 배치 (월·수·금) + 주말 일괄 초안 5건**. REQ-NF-080 커버리지 목표 ≥60% → **≥40%** 하향.
-  3. **Gemini Search + YouTube grounding 조기 도입**: C-TEC-025 Admin Research Copilot 의 Gemini 부분만 Phase 4 에 당김. 카고 전문 YouTube 채널 자막 취합으로 뉴스 소스 다양성 확보. C-TEC-016 "사용자 공개 콘텐츠에 LLM 산출물 직접 게시 금지" 원칙 유지 (관리자 참고용만).
-  4. **Amendment Triggers 업데이트**: "타겟 재정렬" trigger 소진 · 체크 표시. OQ-M6 · OQ-R17 · Supabase · Loops 4종 유지.
-  5. **신규 Task FR-052** (TASKS.md): Gemini YouTube 카고 채널 자막 취합 (Phase 4 · CP-08 Admin Workflow).
-  6. **북극성(WAU 500) 유지** + 병행 관측 지표(채용 딥링크 클릭률·이탈률·구독 전환율) 추가.
-  - **근거**: 2026-04-19 세션 냉정 유용성 감사 — 현직자 6/10 (대체재 우세) vs 취준생 8/10 (대체재 부재)
-  - **관련 파일 업데이트**: PRD 00 §2 페르소나 표 / CLAUDE.md §1 타겟 / DASHBOARD.md / TASKS.md + CHECKPOINTS.md CP-08 / learning-keywords.md
+  2. **에디터 Pick 부담 경감 + 톤 규약**: 매일 3~4개 → **주 3회 배치 (월·수·금) + 주말 일괄 초안 5건**. REQ-NF-080 커버리지 목표 ≥60% → **≥40%** 하향. **C-TEC-016 에 "Gemini 초안 + Founder 톤 편집 · 승인 후 게시" 하이브리드 명시** (자동 무편집 게시 금지).
+  3. **범위 축소 (사용자 결정 · 2026-04-19)**:
+     - ~~REQ-FUNC-116~~ (관리자 일괄 승인 단축키) — 제거 (가치 낮음)
+     - ~~REQ-FUNC-120~~ (2~5년차 하이라이트) — 제거 (Primary 재정렬로 불필요)
+     - ~~REQ-FUNC-218·219~~ (공유 루프 + OG) — 제거 (취준생 공유가치 낮음)
+     - Bento Grid: **Metric-Live 카드 제거** · Job-Spotlight 확대 · 14사 딥링크 preview 추가 (A1 우선순위 반영)
+     - ~~FR-052 Gemini YouTube grounding~~ (Rev 1.1 추가했던 신규 Task) — **철회** · C-TEC-025 Phase 5.5+ 로 복귀. 리서치: 한국 전용 카고 유튜브 채널 미발견.
+  4. **3D Carousel 유지**: `/about` 하단 REQ-FUNC-304 · ADR-006 premium animated 유지 (사용자 명시 결정).
+  5. **국내 뉴스 소스 재정의 (RSS/API 실측 후)**: 2026-04-19 WebFetch 결과:
+     - 카고프레스 · RSS 미제공 · HTML parsing 가능 (일 5~10 기사)
+     - 카고뉴스 · **월간 간행물** · 일일 다이제스트 부적합
+     - 포워더케이알 · **커뮤니티 사이트** (뉴스 X) · 제거
+     - aircargonews.net = "Air Cargo News UK" 동일 (해외 RSS 3종에 이미 포함)
+     - **결론**: REQ-FUNC-011 Must → Should · "국내 뉴스는 Naver News API (REQ-FUNC-010) primary · 카고프레스 HTML parse Best Effort" 로 축소.
+     - OQ-R3 부분 해소 · OQ-R4 저작권 확인은 scrape 시 재점검.
+  6. **Phase 5.5 소스 목록 확장** (문서 참조만, Task 추가 없음): WorldACD 운임 지수 · 항공사 7사 스케줄 (KE/OZ/DL/UA/AA/HA/에어제타) · Korean Air Cargo 월간 요금표 · 항공 통계 (공공데이터포털). **현 MVP 스코프 외**.
+  7. **About 페이지 자기소개 1줄 추가**: CON-09 준수 (실명/회사/학교 비공개) + "11년차 항공사 화물 영업 + 지상 오퍼(loadmaster) 양측 관점" 1줄 명시. UI-009 범위 확장.
+  8. **cargo_career_links `review_one_liner` 컬럼 추가**: 14사 한 줄 특징 · DB-012 범위 확장. 잡플래닛 부분 대체.
+  9. **DASHBOARD KPI 재구성 (관리자 대시보드)**: 8 KPI → **4 KPI** (WAU · `/jobs` 클릭률 · 14 공식 딥링크 이탈률 · Pick 커버리지). FR-042·043·404·405 범위 축소.
+  10. **Amendment Triggers 업데이트**: "타겟 재정렬" ✅ 체크. OQ-M6·OQ-R17·Supabase·Loops 4종 유지.
+  11. **북극성(WAU 500) 유지** + 병행 관측 지표(채용 클릭률·14 딥링크 이탈률·`/jobs`→구독 전환율) 추가.
+  - **근거**: 2026-04-19 세션 냉정 유용성 감사 + 사용자 범위 정리 · RSS/API 실측 5건
+  - **관련 파일 업데이트**: TASKS.md 150 → 146 (4 Task 제거) · CHECKPOINTS.md · DASHBOARD.md · learning-keywords.md · PRD 01/02/04/06 추후 Rev 1.2 에서 세부 sync
 
 - **2026-04-18 Rev 1.0 (Baseline — Phase 2 구현 착수)**: 교육자료 "SRS 검토 및 보강" 방법론(개발 난이도·기술 스택·운영 비용 3대 검토 기준 + PoC 3단 분류: 증명필요/증명불가/Dummy대체) 적용 후 Baseline 승격. 사용자 D1~D6 체크리스트 승인 완료 (2026-04-18). 주요 변경:
   1. **C-TEC-015 Gemini-only 단순화**: `openai | gemini | anthropic` 3-provider 추상화 → **Gemini 1.5 Flash 단일 어댑터**. facade 구조(`src/lib/api/translation/index.ts`)는 유지해 Phase 5.5+ OQ-R17 실측 결과에 따라 `openai` / `anthropic` 추가 가능. 미구현 provider를 env로 지정 시 런타임 에러 반환. 의존성: `@google/generative-ai@^0.21` 만 MVP 설치.

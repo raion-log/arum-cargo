@@ -24,19 +24,19 @@
 | Phase | CP | 이름 | 진행 | 상태 |
 |---|---|---|---|---|
 | 2 | CP-01 | Project Foundation | `░░░░░░░░░░` 0/13 | 🔜 다음 |
-| 2 | CP-02 | Data Model Baseline | `░░░░░░░░░░` 0/20 | ⏳ 대기 |
+| 2 | CP-02 | Data Model Baseline | `░░░░░░░░░░` 0/20 (DB-012 `review_one_liner` 컬럼 확장) | ⏳ 대기 |
 | 2 | 🚪 CP-03 | Phase 2 Quality Gate | `░░░░░░░░░░` 0/6 | ⏳ 대기 |
-| 3 | CP-04 | Mock UI 렌더 | `░░░░░░░░░░` 0/20 | ⏳ 대기 |
+| 3 | CP-04 | Mock UI 렌더 | `░░░░░░░░░░` 0/19 (Rev 1.1 −FR-027) | ⏳ 대기 |
 | 3 | 🚪 CP-05 | Phase 3 Quality Gate | `░░░░░░░░░░` 0/4 | ⏳ 대기 |
-| 4 | CP-06 | News Ingest Live | `░░░░░░░░░░` 0/10 | ⏳ 대기 |
+| 4 | CP-06 | News Ingest Live | `░░░░░░░░░░` 0/10 (국내 RSS → Naver API primary) | ⏳ 대기 |
 | 4 | CP-07 | Jobs Ingest Live | `░░░░░░░░░░` 0/10 | ⏳ 대기 |
-| 4 | CP-08 | Admin Workflow | `░░░░░░░░░░` 0/10 | ⏳ 대기 |
+| 4 | CP-08 | Admin Workflow | `░░░░░░░░░░` 0/9 (Rev 1.1 −FR-023·−FR-052) | ⏳ 대기 |
 | 4 | 🚪 CP-09 | Phase 4 Quality Gate | `░░░░░░░░░░` 0/10 | ⏳ 대기 |
-| 5 | CP-10 | Email Growth Loop Live | `░░░░░░░░░░` 0/13 | ⏳ 대기 |
-| 5 | CP-11 | Admin Dashboard Live | `░░░░░░░░░░` 0/10 | ⏳ 대기 |
+| 5 | CP-10 | Email Growth Loop Live | `░░░░░░░░░░` 0/12 (Rev 1.1 −FR-039) | ⏳ 대기 |
+| 5 | CP-11 | Admin Dashboard Live | `░░░░░░░░░░` 0/10 (KPI 4종 축소) | ⏳ 대기 |
 | 5 | 🏁 CP-12 | MVP 완성 (Phase 5 QG) | `░░░░░░░░░░` 0/14 | ⏳ 대기 |
 
-전체 Task: **0 / 150 완료 (0%)**
+전체 Task: **0 / 146 완료 (0%) — Rev 1.1 축소 · 원 150 − 4 제거 (FR-023/027/039/052)**
 
 ---
 
@@ -76,14 +76,16 @@ Phase 5 착수 전:
 
 ---
 
-## ⚠️ Known Issues (Rev 1.1 cleanup 예정)
+## ⚠️ Known Issues (Rev 1.2 cleanup 예정)
 
 | # | 항목 | 영향 | 해소 시점 |
 |---|---|---|---|
-| 1 | SRS 헤더 claim (69/67) vs 실측 (108/87) REQ 카운트 drift | 낮음 (기록만) | Rev 1.1 |
+| 1 | SRS 헤더 claim (69/67) vs 실측 (108/87) REQ 카운트 drift | 낮음 (기록만) | Rev 1.2 |
 | 2 | Mermaid diagrams 일부 `OpenAI GPT-4o-mini` 라벨 잔존 | 낮음 (역사적 컨텍스트) | Phase 4 진입 시 |
 | 3 | `ADR-007-translation-gpt-4o-mini.md` 파일명 | 낮음 | Phase 4 Amendment |
 | 4 | 01-macro-inventory.md Step 기반 view · TASKS.md canonical 불일치 | 낮음 | TASKS.md 를 canonical 로 운영 |
+| 5 | PRD 01/02/04/06 의 Rev 1.1 세부 변경 (공유 루프·2~5년차 하이라이트·일괄 승인·Bento Metric-Live·Pick 톤 규약) 아직 미sync | 중간 (Phase 3/4 진입 전 반영) | Rev 1.2 PRD sync |
+| 6 | **국내 카고 RSS 실측 결과**: 카고프레스 RSS 미제공 (HTML only) · 카고뉴스 월간 · 포워더케이알 커뮤니티. Naver API primary 로 전환됨 | 낮음 (Rev 1.1 에 반영됨) | 해소 |
 
 ---
 

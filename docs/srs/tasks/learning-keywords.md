@@ -108,8 +108,7 @@
 | **🚨 Loops List Send API** | **T-FEAT-206-W · REQ-NF-011 블로커 해소 핵심** | **H** | https://loops.so/docs/transactional · "list send" 엔드포인트 확인 필수 | ☐ |
 | **Loops webhook 서명 · `Authorization` header vs HMAC body** | T-FEAT-216-W | M | Loops webhook docs | ☐ |
 | **Gemini 1.5 Flash — `@google/generative-ai` SDK** | T-API-006 | H | https://ai.google.dev/tutorials/get_started_node | ☐ |
-| **Gemini Search grounding (`tools: [{googleSearch: {}}]`)** | FR-052 · ADR-009 | H | https://ai.google.dev/gemini-api/docs/grounding | ☐ |
-| **Gemini YouTube video input (`fileData: youtube URL`)** | FR-052 · ADR-009 | H | https://ai.google.dev/gemini-api/docs/video-understanding | ☐ |
+| ~~Gemini Search grounding~~ · ~~Gemini YouTube video input~~ | ~~FR-052~~ **철회** (Rev 1.1 · Phase 5.5+ C-TEC-025 복귀 시 재학습) | — | — | — |
 | **Gemini 무료 티어 한도 (분당 15 · 일 1,500)** | CON-06 · REQ-NF-120 | L | Google AI Studio docs | ☐ |
 | **Naver 뉴스 API + 쿼리 파라미터** | T-API-001 | M | https://developers.naver.com/docs/serviceapi/search/news/news.md | ☐ |
 | **`fast-xml-parser` (Worknet XML)** | T-API-004 | L | npm fast-xml-parser | ☐ |

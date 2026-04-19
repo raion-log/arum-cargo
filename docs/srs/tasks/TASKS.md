@@ -33,14 +33,14 @@
 | **Epic 3. External Integration** (API-###) | 9 | 3 | 5 | 1 |
 | **Epic 4. Mock & Fixtures** (MOCK-###) | 6 | 0 | 0 | 6 |
 | **Epic 5. Cargo News I-Side** (FR-001~013) | 13 | 1 | 9 | 3 |
-| **Epic 6. Cargo Jobs A-Side** (FR-014~027) | 14 | 0 | 10 | 4 |
-| **Epic 7. Email Growth Loop** (FR-028~039) | 12 | 2 | 8 | 2 |
+| **Epic 6. Cargo Jobs A-Side** (FR-014~026, 027 deprecated) | 12 (Rev 1.1 −2) | 0 | 9 | 3 |
+| **Epic 7. Email Growth Loop** (FR-028~038, 039 deprecated) | 11 (Rev 1.1 −1) | 2 | 8 | 1 |
 | **Epic 8. UI/UX** (UI-###) | 9 | 1 | 6 | 2 |
-| **Epic 9. Admin Dashboard** (FR-040~047, FR-052) | 9 | 2 | 6 | 1 |
+| **Epic 9. Admin Dashboard** (FR-040~047, FR-052 철회) | 8 (Rev 1.1 −1) | 1 | 6 | 1 |
 | **Epic 10. Data/System Bridge** (FR-048~051) | 4 | 0 | 3 | 1 |
 | **Epic 11. Test Automation** (TEST-###) | 20 | 2 | 15 | 3 |
 | **Epic 12. Non-Functional** (NFR-###) | 22 | 2 | 15 | 5 |
-| **합계** | **151** | **16 (11%)** | **96 (63%)** | **39 (26%)** |
+| **합계** | **147** (Rev 1.1 축소 · 원 151 − 4 제거) | **14 (10%)** | **94 (64%)** | **39 (26%)** |
 
 **복잡도 분포 판정**: H 10% 이내 · M/L 90% → MVP 단계 적절 (교육자료 SRS v1 요건 3).
 
@@ -108,7 +108,7 @@
 | DB-009 | Data | `email_events` + webhook dedup UNIQUE | REQ-FUNC-216·217 | DB-003 | M |
 | DB-010 | Data | `ingest_logs` + status enum + 90일 retention cron | REQ-FUNC-508 / REQ-NF-165 | INFRA-005 | M |
 | DB-011 | Data | `aviation_glossary` 테이블 + 50건 카고 용어 seed | REQ-FUNC-030 | INFRA-005 | M |
-| DB-012 | Data | `cargo_career_links` + 14 카고 기업 공식 채용 seed | REQ-FUNC-112 | INFRA-005 | L |
+| DB-012 | Data | `cargo_career_links` + 14사 seed + **`review_one_liner` 컬럼 (Rev 1.1 확장, 잡플래닛 대체 역할)** | REQ-FUNC-112 · Rev 1.1 Changelog #8 | INFRA-005 | M |
 | DB-013 | Data | Enum 3종: news_category · cargo_job_category · editor_pick_tone | REQ-FUNC-018·025·105 | INFRA-005 | L |
 | DB-014 | Data | **트리거 `block_non_cargo_titles`** (ADR-008 DB-레벨 방어선) | REQ-FUNC-103·NF-067 / CON-05 | DB-002·013 | H |
 | DB-015 | Data | 트리거 `log_editor_pick_change` (jsonb history append) | REQ-FUNC-026 | DB-001·004 | H |
@@ -173,11 +173,11 @@
 | FR-020 | Jobs | `/jobs` 정렬 3종 (신뢰도·마감·최신) Read | REQ-FUNC-109 | FR-018 | L |
 | FR-021 | Jobs | `/jobs/[slug]` 상세 + JobPosting JSON-LD Read | REQ-FUNC-113 | DB-002, FR-018 | M |
 | FR-022 | Jobs | `/admin/jobs` 승인 큐 (pending → approved/rejected) Write | REQ-FUNC-114·115 | DB-002·014, FR-040 | M |
-| FR-023 | Jobs | 관리자 일괄 승인 단축키 (신뢰도 5) Write | REQ-FUNC-116 | FR-022 | L |
+| ~~FR-023~~ | ~~Jobs~~ | ~~관리자 일괄 승인 단축키~~ — **Rev 1.1 제거** | REQ-FUNC-116 (deprecated) | — | — |
 | FR-024 | Jobs | 마감 7일 후 자동 archived 전이 cron Write | REQ-FUNC-117 | DB-017, INFRA-012 | M |
 | FR-025 | Jobs | `/jobs` 빈 상태 UI + 구독 CTA | REQ-FUNC-118 | FR-018, UI-002 | L |
 | FR-026 | Jobs | 공고 클릭 beacon `/api/jobs/click/[id]` Write | REQ-FUNC-119 | DB-006 | L |
-| FR-027 | Jobs | 2~5년차 years_experience 하이라이트 Read | REQ-FUNC-120 | FR-018 | M |
+| ~~FR-027~~ | ~~Jobs~~ | ~~2~5년차 하이라이트~~ — **Rev 1.1 제거** (A1 Primary 전환 후 불필요) | REQ-FUNC-120 (deprecated) | — | — |
 
 ### Epic 7 — Email Growth Loop
 
@@ -194,7 +194,7 @@
 | FR-036 | Email | 카테고리 매칭 + quota balancing (다이제스트 필터) Read | REQ-FUNC-213 | DB-001·002·003 | M |
 | FR-037 | Email | 매칭 0건 skip + 주 1회 확장 안내 메일 Write | REQ-FUNC-214 | FR-036, API-007 | M |
 | FR-038 | Email | Loops webhook 수신 + HMAC 검증 + email_events INSERT Write | REQ-FUNC-216 / REQ-NF-049 | API-007, DB-009 | H |
-| FR-039 | Email | 공유 루프 `/share/[id]?ref=` + referrer_subscriber_id + OG meta Write | REQ-FUNC-218·219 | DB-003, FR-028 | M |
+| ~~FR-039~~ | ~~Email~~ | ~~공유 루프 + OG meta~~ — **Rev 1.1 제거** (A1 Primary 전환 · 공유가치 낮음) | REQ-FUNC-218·219 (deprecated) | — | — |
 
 ### Epic 8 — UI/UX
 
@@ -208,7 +208,7 @@
 | UI-006 | UI | `<AviationTerm>` 툴팁 컴포넌트 (hover + tap + 키보드 포커스) | REQ-FUNC-029·307 | INFRA-002, DB-011 | M |
 | UI-007 | UI | D-3 `arum.urgent` 배지 + 신뢰도 Star 아이콘 | REQ-FUNC-110·111 | INFRA-002 | L |
 | UI-008 | UI | 카고 기업 공식 딥링크 Bento 카드 (14개 그리드) | REQ-FUNC-112 | DB-012, INFRA-002 | M |
-| UI-009 | UI | About 페이지 (개인정보 비노출) + `/privacy` · `/terms` 법정 | REQ-FUNC-309·310 / CON-09 | INFRA-013 | M |
+| UI-009 | UI | About 페이지 (개인정보 비노출 + **"11년차 항공사 화물 영업 + 지상 오퍼(loadmaster) 양측 관점" 1줄 카피 — Rev 1.1 확장**) + `/privacy` · `/terms` 법정 | REQ-FUNC-309·310 / CON-09 / Rev 1.1 Changelog #7 | INFRA-013 | M |
 
 ### Epic 9 — Admin Dashboard
 
@@ -216,13 +216,13 @@
 |---|---|---|---|---|---|
 | FR-040 | Admin | `/admin/login` Supabase Magic Link + admin_users 화이트리스트 체크 Write | REQ-FUNC-401·403 / C-TEC-013 | API-008, DB-004 | M |
 | FR-041 | Admin | middleware `/admin/:path*` 세션 보호 | REQ-FUNC-402 / REQ-NF-044 | FR-040 | M |
-| FR-042 | Admin | `/admin/dashboard` 8 KPI 카드 (shadcn/ui charts Recharts) Read | REQ-FUNC-404·405 / C-TEC-006 | INFRA-002, FR-043 | H |
+| FR-042 | Admin | `/admin/dashboard` **4 KPI 카드 — Rev 1.1 축소** (WAU · `/jobs` 클릭률 · 14 공식 딥링크 이탈률 · Pick 커버리지) · shadcn/ui charts Recharts | REQ-FUNC-404·405 / C-TEC-006 / Rev 1.1 Changelog #9 | INFRA-002, FR-043 | M |
 | FR-043 | Admin | `/api/admin/metrics` 3소스 집계 (Supabase + Loops + Vercel Analytics) | REQ-FUNC-406 / REQ-NF-007 | API-007·008·009, FR-046·047 | M |
 | FR-044 | Admin | `/admin/news` 인라인 에디터 Pick 작성 + 승인 플로우 Write | REQ-FUNC-407 | DB-001·015, FR-041 | M |
 | FR-045 | Admin | 에디터 Pick 커버리지 < 60% 경고 + tpl-admin-alert 발송 Write | REQ-FUNC-410·411 | API-007, FR-044 | M |
 | FR-046 | Admin | WAU 계산 쿼리 (last_active_at ≥ now()-7d) Read | REQ-FUNC-408 / REQ-NF-010 | DB-003·018 | L |
 | FR-047 | Admin | 4주 유지율 코호트 쿼리 Read | REQ-FUNC-409 | DB-003, FR-046 | M |
-| FR-052 | Admin | **Gemini Search + YouTube 카고 채널 자막 취합 (관리자 리서치 참고용)** | ADR-009 · C-TEC-025 부분 · C-TEC-016 (공개 게시 금지) | API-006, FR-040 | H |
+| ~~FR-052~~ | ~~Admin~~ | ~~Gemini Search + YouTube 카고 채널 자막 취합~~ — **Rev 1.1 철회** (한국 전용 카고 YT 채널 미발견 · Phase 5.5+ C-TEC-025 로 복귀) | — | — | — |
 
 ### Epic 10 — Data/System Bridge
 
