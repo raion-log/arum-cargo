@@ -65,7 +65,7 @@
 | DB + Auth | Supabase (Magic Link + `admin_users` 화이트리스트) | 무료 티어로 MVP |
 | 차트 (관리자 + 사용자 통합) | **shadcn/ui charts (Recharts 래퍼) 단일** | `/admin/dashboard` 8 KPI 카드 · `/news` 트렌드 · `/employers` 분포 모두 동일 라이브러리. SRS C-TEC-006 |
 | 이메일 | **Loops.so** (MVP 무료 티어, 공용 발송 `loops.email`) → Phase 5 이후 Resend + 자체 도메인 폴백 | Loops 2,000 contacts 무료·도메인 불필요. §50 준수 OQ-M6에서 검증 |
-| 번역 (LLM) | **Provider-Agnostic** (`TRANSLATION_PROVIDER` env, MVP 기본 `openai` = GPT-4o-mini). `gemini` / `anthropic` 어댑터 지원 | 월 예산 캡 $5 (`OPENAI_MONTHLY_BUDGET_CAP_USD`). SRS C-TEC-015 |
+| 번역 (LLM) | **Provider-Agnostic facade** (`TRANSLATION_PROVIDER` env). **MVP 기본 `gemini` (Gemini 1.5 Flash 무료 티어)** — Gemini 어댑터 1종만 구현. `openai` / `anthropic` 은 Phase 5.5+ OQ-R17 실측에 따라 도입 (미구현 provider 지정 시 런타임 에러) | 기본 Gemini 무료 (분당 15 req · 일 1,500 req). `openai` 선택 시만 월 $5 cap. SRS Rev 1.0 C-TEC-015 |
 | 배포 | Vercel Hobby (`arumcargo.vercel.app`) | 500명 또는 첫 제휴 문의 시 커스텀 도메인 검토 |
 | Analytics | Vercel Analytics | MUV·유입 경로 소스. 관리자 대시보드 API 통합 |
 
@@ -123,12 +123,14 @@ LOOPS_WEBHOOK_SECRET=       # Loops events webhook 서명 검증
 # Cron secret (Vercel Cron + GitHub Actions ingest 보호)
 CRON_SECRET=
 
-# Translation (LLM Provider-Agnostic, MVP 기본 openai = GPT-4o-mini)
-TRANSLATION_PROVIDER=openai          # openai | gemini | anthropic
-OPENAI_API_KEY=
-OPENAI_MONTHLY_BUDGET_CAP_USD=5
-# GOOGLE_GENERATIVE_AI_API_KEY=     # TRANSLATION_PROVIDER=gemini 사용 시
-# ANTHROPIC_API_KEY=                # TRANSLATION_PROVIDER=anthropic 사용 시
+# Translation (LLM Provider-Agnostic facade, MVP 기본 gemini = Gemini 1.5 Flash)
+TRANSLATION_PROVIDER=gemini          # gemini (MVP) | openai | anthropic (Phase 5.5+ 옵션)
+GOOGLE_GENERATIVE_AI_API_KEY=
+# (Phase 5.5+ 옵션, TRANSLATION_PROVIDER=openai 선택 시)
+# OPENAI_API_KEY=
+# OPENAI_MONTHLY_BUDGET_CAP_USD=5
+# (Phase 5.5+ 옵션, TRANSLATION_PROVIDER=anthropic 선택 시)
+# ANTHROPIC_API_KEY=
 
 # Vercel Analytics API (관리자 대시보드 MUV)
 VERCEL_API_TOKEN=
@@ -145,7 +147,9 @@ ADMIN_EMAIL_WHITELIST=
 - [x] Phase 0.5: 전략·사용자 분석 확장 (11~15)
 - [x] Phase 0.7: VPS + ADR 정제 (16-vps.md + ADR-001~007)
 - [x] **Phase 0.8: Cargo-First Pivot** (ADR-008 + 7 레퍼런스 v0.3 재작성)
-- [x] **Phase 1: PRD v0.3 전면 재작성** (`docs/prd/*.md` 9개) — 사용자 승인 대기
+- [x] **Phase 1: PRD v0.3 전면 재작성** (`docs/prd/*.md` 9개) — **사용자 승인 완료 (2026-04-18, D1~D6 체크리스트)**
+- [x] **Phase 1.5: SRS Rev 1.0 Baseline** (`docs/srs/SRS-001-arum-cargo.md`) — Gemini-only · 3 모순 해소 · Amendment Triggers 선언
+- [x] **Phase 1.6: Task 추출 프레임** (`docs/srs/tasks/` CHECKPOINTS·TASKS·phase-2 38/38 · review · learning-keywords)
 - [ ] Phase 2: Next.js 프로젝트 셋업 (`web/`) — `arum.*` 토큰·Supabase v0.3 마이그레이션
 - [ ] Phase 3: UI (Mock 데이터) — Bento + Parallax + Blob + 3D Carousel `/about` 하단
 - [ ] Phase 4: 외부 API 연동 — 카고 뉴스·채용 ingest

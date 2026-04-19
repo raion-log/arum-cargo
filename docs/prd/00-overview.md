@@ -240,7 +240,7 @@ flowchart LR
 - **DB**: Supabase (Postgres) — Auth는 `/admin/dashboard` Magic Link만 사용 (ADR-003 확장)
 - **Email**: **Loops.so 무료 티어 (2,000 contacts)** — 도메인 불필요 ([ADR-001](../adr/ADR-001-email-service-loops-over-resend.md))
 - **Cron**: Vercel Cron (다이제스트) + GitHub Actions (뉴스·채용 수집) 하이브리드 ([ADR-005](../adr/ADR-005-cron-hybrid-vercel-github.md))
-- **Translation (LLM)**: Provider-Agnostic 추상화 (`TRANSLATION_PROVIDER` env, MVP 기본 `openai`=GPT-4o-mini, `gemini`/`anthropic` swap 가능) ([ADR-007 Amendment 2026-04-18](../adr/ADR-007-translation-gpt-4o-mini.md), [SRS C-TEC-015](../srs/SRS-001-arum-cargo.md))
+- **Translation (LLM)**: Provider-Agnostic facade (`TRANSLATION_PROVIDER` env, **MVP 기본 `gemini` = Gemini 1.5 Flash 무료 티어**). `openai` / `anthropic` 은 Phase 5.5+ OQ-R17 실측 후 도입 (미구현 provider 지정 시 런타임 에러) ([ADR-007 Amended-2 2026-04-19](../adr/ADR-007-translation-gpt-4o-mini.md), [SRS Rev 1.0 C-TEC-015](../srs/SRS-001-arum-cargo.md))
 - **Analytics**: Vercel Analytics (무료 티어)
 - **Deploy**: Vercel, 도메인 `arumcargo.vercel.app`
 

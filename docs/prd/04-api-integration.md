@@ -11,7 +11,7 @@
 
 - **네이버 뉴스 키워드 전면 교체**: 승무원·LCC·객실 제거 → 카고 키워드 12종 (`항공화물`·`화물기`·`포워더`·`콘솔사`·`AWB`·`TAC Index`·`BAI` 등).
 - **해외 RSS 교체**: Simple Flying / Aviation Week → **Loadstar · Air Cargo News UK · FlightGlobal Cargo** (카고 전문).
-- **LLM 번역 Provider-Agnostic 추상화 (2026-04-18 개정)**: `TRANSLATION_PROVIDER` env로 `openai | gemini | anthropic` 런타임 교체. 시스템 프롬프트는 카고 전문 용어 (AWB·ULD·TAC Index·Belly Cargo) 괄호 병기 규칙 공용. MVP 기본 `openai` = `gpt-4o-mini`.
+- **LLM 번역 Provider-Agnostic facade (2026-04-19 Rev 1.0 반영)**: `TRANSLATION_PROVIDER` env. **MVP 기본 `gemini` = Gemini 1.5 Flash 무료 티어** (분당 15 req · 일 1,500 req · $0). `openai` / `anthropic` 어댑터는 Phase 5.5+ OQ-R17 실측 후 도입 (MVP 미구현). 시스템 프롬프트는 카고 전문 용어 (AWB·ULD·TAC Index·Belly Cargo) 괄호 병기 규칙 공용.
 - **워크넷/사람인 키워드 교체**: 승무원·조종사·정비 제거 → 카고 직군 키워드 10종. 제외 키워드 필터 추가.
 - **운항 API (KAC/IIAC) → Phase 5.5로 이동**. Phase 5 MVP에서는 호출 안 함.
 - **Phase 5.5 신규 API**: `capacity_feedback` 제보 접수 (내부), `employer_inquiries` 문의 접수.
