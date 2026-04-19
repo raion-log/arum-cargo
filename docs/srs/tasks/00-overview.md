@@ -269,19 +269,25 @@ assignees: ''
 
 ---
 
-## 9. 파일 구조
+## 9. 파일 구조 (3층 구조)
+
+**Layer 1 — 사용자 추적** (12 Checkpoint, 제품 마일스톤)
+**Layer 2 — AI 에이전트 실행** (150 Task canonical 6-컬럼)
+**Layer 3 — 구현 상세** (풀 GitHub Issue 템플릿)
 
 ```
 docs/srs/tasks/
 ├── 00-overview.md                # (이 파일) 방법론·규약 고정
-├── 01-macro-inventory.md         # Macro 전체 Task 인벤토리 (얕음)
-├── phase-2-tasks.md              # Phase 2 Micro (Next.js 셋업 · 이번 세션 Few-Shot 5~8개)
-├── phase-3-tasks.md              # Phase 3 Micro (UI Mock) — 다음 세션
-├── phase-4-tasks.md              # Phase 4 Micro (API 연동) — 다음 세션
-├── phase-5-tasks.md              # Phase 5 Micro (이메일·대시보드) — 다음 세션
-├── learning-keywords.md          # 생소 키워드 누적 (다음 세션부터)
+├── CHECKPOINTS.md                # Layer 1 — 사용자 추적 12 CP
+├── TASKS.md                      # Layer 2 — AI 에이전트 150 Task canonical
+├── 01-macro-inventory.md         # Layer 2 alternate view (Step 기반, TASKS.md 로 대체 권장)
+├── phase-2-tasks.md              # Layer 3 — Phase 2 상세 38/38
+├── phase-3-tasks.md              # Layer 3 — Phase 3 상세 (추가 예정)
+├── phase-4-tasks.md              # Layer 3 — Phase 4 상세 (추가 예정)
+├── phase-5-tasks.md              # Layer 3 — Phase 5 상세 (추가 예정)
+├── learning-keywords.md          # 생소 키워드 누적
 └── reviews/
-    ├── phase-2-review.md         # Phase 2 Micro 완료 후 사후 검토
+    ├── phase-2-review.md         # Phase 2 완료 후 사후 검토
     ├── phase-3-review.md
     ├── phase-4-review.md
     └── phase-5-review.md
