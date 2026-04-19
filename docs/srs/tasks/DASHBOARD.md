@@ -12,7 +12,8 @@
 |---|---|
 | **현재 Phase** | Phase 1 완료 → **Phase 2 착수 대기** |
 | **현재 CP** | CP-01 Project Foundation (0/13) 대기 |
-| **SRS 버전** | Rev 1.0 Baseline ✅ |
+| **SRS 버전** | **Rev 1.1** (ADR-009 타겟 재정렬 반영, 2026-04-19) |
+| **Primary 타겟** | **A1 정하늘 (카고 취준생)** · Secondary: C1 이지훈 (2~5년차) |
 | **MVP 예상 기간** | 10~12주 (CP-12 🏁 목표) |
 | **월 운영비** | ₩0 (실 구축 전) / 예상 ₩0 (Phase 5 구동 후) |
 
@@ -113,10 +114,9 @@ Phase 5 착수 전:
 
 ---
 
-## 📌 Amendment Trigger 감시
+## 📌 Amendment Trigger 감시 (Rev 1.1 → Rev 1.2)
 
-Rev 1.0 이 Rev 1.1 로 승격되는 조건 4종 (발동 시 새 Diff 보고서 작성):
-
+- [x] ~~**타겟 재정렬**~~ — **ADR-009 로 Rev 1.1 반영 완료 (2026-04-19)**
 - [ ] **OQ-M6** Loops §50 필드 주입 검증 (Phase 5 진입 직전) — 실패 시 Resend 전환
 - [ ] **OQ-R17** 번역 Provider A/B 실측 (Phase 4) — Gemini 품질 수용 기준 미달 시 OpenAI/Anthropic 복원
 - [ ] **Supabase 500MB** 근접 (Phase 5.5 대상 jsonb 4GB 리스크)

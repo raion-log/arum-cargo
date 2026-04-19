@@ -1,6 +1,6 @@
 # Software Requirements Specification (SRS)
 Document ID: SRS-001
-Revision: 1.0 (Baseline — Phase 2 구현 착수 가능)
+Revision: 1.1 (Amendment 1 — ADR-009 타겟 재정렬 반영)
 Date: 2026-04-18
 Standard: ISO/IEC/IEEE 29148:2018
 
@@ -9,11 +9,12 @@ Standard: ISO/IEC/IEEE 29148:2018
 > **Pivot Background**: Cargo-First 전략은 PRD 00 §1·§2에 이미 반영되어 있으며, 본 SRS는 해당 PRD 내용만을 원천으로 사용한다.
 > **Owner**: Arum Cargo Founder (11년차 항공 화물 현직자)
 >
-> **Rev 1.0 Amendment Triggers (→ Rev 1.1)**:
-> - OQ-M6 Loops §50 실발송 검증 (Phase 5 진입 직전) — 실패 시 Resend + 자체 도메인 전환 Amendment
-> - OQ-R17 번역 Provider A/B 실측 (Phase 4) — `openai` / `anthropic` 어댑터 추가 Amendment
-> - Supabase 500MB 근접 시 Phase 5.5 스키마 조정 Amendment
-> - Loops 1,500 contacts 도달 시 Resend 전환 준비 Amendment
+> **Rev 1.1 Amendment Triggers (→ Rev 1.2)**:
+> - ✅ ~~타겟 재정렬~~ — **ADR-009 로 2026-04-19 해소** (Rev 1.1 으로 반영 완료)
+> - [ ] OQ-M6 Loops §50 실발송 검증 (Phase 5 진입 직전) — 실패 시 Resend + 자체 도메인 전환 Amendment
+> - [ ] OQ-R17 번역 Provider A/B 실측 (Phase 4) — `openai` / `anthropic` 어댑터 추가 Amendment
+> - [ ] Supabase 500MB 근접 시 Phase 5.5 스키마 조정 Amendment
+> - [ ] Loops 1,500 contacts 도달 시 Resend 전환 준비 Amendment
 
 ---
 
@@ -21,7 +22,7 @@ Standard: ISO/IEC/IEEE 29148:2018
 
 ### 1.1 Purpose
 
-본 시스템은 **2~5년차 항공 화물 콘솔사·포워더 영업·오퍼 실무자(C1 이지훈 페르소나)**가 매일 아침 출근길 5분 안에 업계 뉴스·채용 정보를 소화하고 "나답게 하루를 시작"하도록 지원하는 웹 허브 + 이메일 다이제스트 시스템이다. 본 SRS는 **Phase 5 MVP**가 해결해야 할 5대 Pain을 정량 목표와 함께 명시한다.
+본 시스템은 **카고 취업 준비생(A1 정하늘 Primary, ADR-009 재정렬)** 및 **2~5년차 항공 화물 콘솔사·포워더 영업·오퍼 실무자(C1 이지훈 Secondary)** 가 (a) 공식 카고 채용 정보를 파편화 없이 접근하고 (b) 11년차 현직자 시선의 뉴스 큐레이션을 매일 아침 5분 안에 소화하도록 지원하는 웹 허브 + 이메일 다이제스트 시스템이다. 본 SRS는 **Phase 5 MVP**가 해결해야 할 5대 Pain을 정량 목표와 함께 명시한다.
 
 | Pain ID | 설명 | AOS / DOS | 현 실패 KPI | 시스템 개선 목표 |
 |---|---|---|---|---|
@@ -1662,6 +1663,16 @@ classDiagram
 ---
 
 ## Changelog
+
+- **2026-04-19 Rev 1.1 (Amendment 1 — 타겟 재정렬)**: 2026-04-19 냉정 유용성 감사 결과 기반 [ADR-009](../adr/ADR-009-target-realignment-applicants-primary.md) 반영.
+  1. **타겟 Primary 재정렬**: C1 이지훈 (2~5년차 현직자) → **A1 정하늘 (카고 취준생)** Primary 로 전환. C1 은 Secondary. §1.1 Purpose 문구 변경.
+  2. **에디터 Pick 부담 경감**: 매일 3~4개 → **주 3회 배치 (월·수·금) + 주말 일괄 초안 5건**. REQ-NF-080 커버리지 목표 ≥60% → **≥40%** 하향.
+  3. **Gemini Search + YouTube grounding 조기 도입**: C-TEC-025 Admin Research Copilot 의 Gemini 부분만 Phase 4 에 당김. 카고 전문 YouTube 채널 자막 취합으로 뉴스 소스 다양성 확보. C-TEC-016 "사용자 공개 콘텐츠에 LLM 산출물 직접 게시 금지" 원칙 유지 (관리자 참고용만).
+  4. **Amendment Triggers 업데이트**: "타겟 재정렬" trigger 소진 · 체크 표시. OQ-M6 · OQ-R17 · Supabase · Loops 4종 유지.
+  5. **신규 Task FR-052** (TASKS.md): Gemini YouTube 카고 채널 자막 취합 (Phase 4 · CP-08 Admin Workflow).
+  6. **북극성(WAU 500) 유지** + 병행 관측 지표(채용 딥링크 클릭률·이탈률·구독 전환율) 추가.
+  - **근거**: 2026-04-19 세션 냉정 유용성 감사 — 현직자 6/10 (대체재 우세) vs 취준생 8/10 (대체재 부재)
+  - **관련 파일 업데이트**: PRD 00 §2 페르소나 표 / CLAUDE.md §1 타겟 / DASHBOARD.md / TASKS.md + CHECKPOINTS.md CP-08 / learning-keywords.md
 
 - **2026-04-18 Rev 1.0 (Baseline — Phase 2 구현 착수)**: 교육자료 "SRS 검토 및 보강" 방법론(개발 난이도·기술 스택·운영 비용 3대 검토 기준 + PoC 3단 분류: 증명필요/증명불가/Dummy대체) 적용 후 Baseline 승격. 사용자 D1~D6 체크리스트 승인 완료 (2026-04-18). 주요 변경:
   1. **C-TEC-015 Gemini-only 단순화**: `openai | gemini | anthropic` 3-provider 추상화 → **Gemini 1.5 Flash 단일 어댑터**. facade 구조(`src/lib/api/translation/index.ts`)는 유지해 Phase 5.5+ OQ-R17 실측 결과에 따라 `openai` / `anthropic` 추가 가능. 미구현 provider를 env로 지정 시 런타임 에러 반환. 의존성: `@google/generative-ai@^0.21` 만 MVP 설치.

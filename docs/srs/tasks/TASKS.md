@@ -36,11 +36,11 @@
 | **Epic 6. Cargo Jobs A-Side** (FR-014~027) | 14 | 0 | 10 | 4 |
 | **Epic 7. Email Growth Loop** (FR-028~039) | 12 | 2 | 8 | 2 |
 | **Epic 8. UI/UX** (UI-###) | 9 | 1 | 6 | 2 |
-| **Epic 9. Admin Dashboard** (FR-040~047) | 8 | 1 | 6 | 1 |
+| **Epic 9. Admin Dashboard** (FR-040~047, FR-052) | 9 | 2 | 6 | 1 |
 | **Epic 10. Data/System Bridge** (FR-048~051) | 4 | 0 | 3 | 1 |
 | **Epic 11. Test Automation** (TEST-###) | 20 | 2 | 15 | 3 |
 | **Epic 12. Non-Functional** (NFR-###) | 22 | 2 | 15 | 5 |
-| **합계** | **150** | **15 (10%)** | **96 (64%)** | **39 (26%)** |
+| **합계** | **151** | **16 (11%)** | **96 (63%)** | **39 (26%)** |
 
 **복잡도 분포 판정**: H 10% 이내 · M/L 90% → MVP 단계 적절 (교육자료 SRS v1 요건 3).
 
@@ -222,6 +222,7 @@
 | FR-045 | Admin | 에디터 Pick 커버리지 < 60% 경고 + tpl-admin-alert 발송 Write | REQ-FUNC-410·411 | API-007, FR-044 | M |
 | FR-046 | Admin | WAU 계산 쿼리 (last_active_at ≥ now()-7d) Read | REQ-FUNC-408 / REQ-NF-010 | DB-003·018 | L |
 | FR-047 | Admin | 4주 유지율 코호트 쿼리 Read | REQ-FUNC-409 | DB-003, FR-046 | M |
+| FR-052 | Admin | **Gemini Search + YouTube 카고 채널 자막 취합 (관리자 리서치 참고용)** | ADR-009 · C-TEC-025 부분 · C-TEC-016 (공개 게시 금지) | API-006, FR-040 | H |
 
 ### Epic 10 — Data/System Bridge
 

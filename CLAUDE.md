@@ -12,7 +12,10 @@
 **항공 화물 업계 현직자가 매일 아침 정리해주는 업계 뉴스 + 채용 허브.**
 - Phase 1~5 MVP 브랜드: **아름 카고 (Arum Cargo)** — `arumcargo.vercel.app`
 - Phase 7 브랜드 확장: **아름 (Arum)** — 항공 생태계 전체(카고 하위 수직)
-- 타겟 핀포인트: **C1 이지훈 — 2~5년차 콘솔사/포워더 항공화물 영업·오퍼**
+- 타겟 우선순위 (ADR-009 2026-04-19 재정렬):
+  - **Primary ★★★**: **A1 정하늘 — 카고 취업 준비생** (공식 채용 허브 + 용어 툴팁 + 에디터 Pick 현장 맥락)
+  - Secondary ★★: C1 이지훈 — 2~5년차 콘솔사/포워더 항공화물 영업·오퍼 (뉴스 큐레이션 + 지인 추천 외 이직 경로)
+  - Tertiary ★: C2 박서연 — 1년차 카고 신입 (용어·업계 맥락 학습)
 - North Star: **WAU (Weekly Active Subscribers)** — Phase 5+ 종료 500명 · 4주 유지율 ≥ 40% (Reforge PMF)
 
 ## 2. 작업 원칙 (Working Discipline)
