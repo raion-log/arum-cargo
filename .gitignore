@@ -51,6 +51,8 @@ supabase/.temp/
 # (단, 프로젝트 간 공통 Claude 지시는 홈 ~/.claude 에 있음. 로컬 세션 캐시만 제외)
 !.claude/commands/
 !.claude/commands/**
+!.claude/agent.md
+!.claude/soul.md
 
 # ---- Obsidian (Vault 설정) ----
 # 플러그인·테마·snippets 는 팀 공유 가치 → 추적

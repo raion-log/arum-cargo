@@ -52,3 +52,17 @@ created: 2026-04-22
 - GitHub Actions: `.github/workflows/wiki-ingest-daily.yml` — 07:00 KST 실행, `wiki-ingest-bot` 으로 `raw/inbox/` 에 커밋/푸시
 - 드라이런 검증 완료 (4개 소스 모두 후보 추출 성공)
 - 레이어 분리: **scraper = 자동(raw 드롭)**, **`/ingest` = 수동/LLM 필요(wiki 변환)**
+
+## [2026-04-23] ingest | cargonews·cargopress 뉴스 27건 + forwarder.kr 채용 19건 (총 46건)
+
+- 처리 파일: `raw/inbox/` 전량 46건
+- sources 생성: 46
+  - 뉴스 (cargonews 12건 + cargopress 15건): 27건
+  - 채용공고 (forwarder.kr): 19건
+- entities 생성: 26 / 갱신: 1
+  - 신규: 중국동방항공, 에어프레미아, HACTL, Teleport, 말레이시아항공, 에티하드카고, 리에주공항, 브뤼셀공항, 에어제타, LX판토스, NX홀딩스, 선진로지스틱스, 유나이티드항공, 캐세이퍼시픽, 이스탄불공항, 세바로지스틱스, GEODIS, 엑소텍, CJ올리브네트웍스, 네오트랜스해운항공, KFL, 아메리칸항공카고, CH로빈슨, 실크웨이항공, HD현대마린솔루션, 스카이로드
+  - 갱신: 페덱스코리아 (cargopress 출처 역참조 추가)
+- concepts 생성: 8 / 갱신: 0
+  - 신규: BAI, 콜드체인, 포워딩-오퍼레이터, 항공화물허브, 그린물류, 제약물류, 반도체물류, 물류자동화
+- 모순 플래그: 0
+- 중복 보도 표기: 3건 (중국동방항공 XIY-VIE, 에어프레미아 화물 홈페이지, 페덱스코리아 AEO) — 카고뉴스·카고프레스 동일 사건 별도 페이지로 처리, ⚠️ 참고 섹션 추가
