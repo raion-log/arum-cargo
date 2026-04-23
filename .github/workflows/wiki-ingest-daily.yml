@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   ingest:
@@ -17,8 +18,6 @@ jobs:
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
-        with:
-          persist-credentials: true
 
       - uses: actions/setup-node@v4
         with:
@@ -36,18 +35,45 @@ jobs:
           TZ: Asia/Seoul
         run: node run.js
 
-      - name: Commit new inbox drops
-        env:
-          GIT_AUTHOR_NAME: wiki-ingest-bot
-          GIT_AUTHOR_EMAIL: wiki-ingest-bot@users.noreply.github.com
-          GIT_COMMITTER_NAME: wiki-ingest-bot
-          GIT_COMMITTER_EMAIL: wiki-ingest-bot@users.noreply.github.com
+      - name: Count pending drops
+        id: count
         run: |
-          git add raw/inbox scripts/wiki-ingest/.state/seen-urls.json
-          if git diff --cached --quiet; then
-            echo "no changes to commit"
-            exit 0
+          if [ -d raw/inbox ]; then
+            COUNT=$(git status --porcelain raw/inbox/ scripts/wiki-ingest/.state/ | wc -l | tr -d ' ')
+          else
+            COUNT=0
           fi
-          COUNT=$(git diff --cached --name-only -- raw/inbox | wc -l | tr -d ' ')
-          git commit -m "chore(wiki-ingest): ${COUNT} new items $(date -u +%Y-%m-%d)"
-          git push
+          echo "count=${COUNT}" >> "$GITHUB_OUTPUT"
+          echo "Pending changes: ${COUNT}"
+
+      # main 브랜치는 branch protection 으로 직접 push 불가 → PR 자동 생성.
+      # 같은 branch (wiki-ingest/automated) 를 재사용해 PR 하나에 매일 누적.
+      - name: Create or update pull request
+        if: steps.count.outputs.count != '0'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: |
+            chore(wiki-ingest): daily scrape ${{ github.run_number }}
+          committer: 'wiki-ingest-bot <wiki-ingest-bot@users.noreply.github.com>'
+          author: 'wiki-ingest-bot <wiki-ingest-bot@users.noreply.github.com>'
+          branch: wiki-ingest/automated
+          delete-branch: false
+          title: 'chore(wiki-ingest): pending cargo news/jobs drops'
+          body: |
+            이 PR 은 `wiki-ingest-daily` 워크플로우가 자동 생성·갱신합니다.
+
+            **포함**: `raw/inbox/` 신규 마크다운 + `scripts/wiki-ingest/.state/seen-urls.json` 업데이트.
+
+            **다음 단계 (머지 후)**:
+            1. 로컬에서 `git pull`
+            2. Claude Code 에서 `/ingest` 실행 → `wiki/` 로 변환
+            3. 처리된 `raw/inbox/*.md` 는 사용자가 `raw/sources/YYYY-MM/` 로 이동 (선택)
+
+            **자동 갱신**: 같은 브랜치 `wiki-ingest/automated` 에 매일 누적 — 머지하지 않으면 다음 날 아이템이 이 PR 에 추가됩니다.
+          labels: |
+            automation
+            wiki-ingest
+          add-paths: |
+            raw/inbox/**
+            scripts/wiki-ingest/.state/seen-urls.json
