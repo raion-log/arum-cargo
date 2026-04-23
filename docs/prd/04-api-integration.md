@@ -292,7 +292,7 @@ function assertNoHallucination(summary: string, sourceText: string): boolean {
 
 ## 5. 워크넷 OpenAPI (v0.3 카고 직군)
 
-**공식 문서**: https://www.data.go.kr/data/15033457/openapi.do
+**공식 문서**: https://www.data.go.kr/data/3038225/openapi.do (한국고용정보원_워크넷 채용정보)
 
 ### 5.1 엔드포인트
 
