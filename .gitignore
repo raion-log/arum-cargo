@@ -67,3 +67,9 @@ logs/
 # ---- Misc ----
 *.local
 tmp/
+
+
+
+
+# Ignore Smart Environment folder
+.smart-env
