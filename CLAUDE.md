@@ -29,7 +29,7 @@
   - 프로젝트 규칙·컨벤션 → 이 `CLAUDE.md`
   - 결정 유보 항목 → `docs/open-questions.md`
   - 외부 자문가 Q&A → `docs/references/99-advisor-notes.md`
-  - 세션 간 맥락 → 홈 MEMORY 시스템 (`~/.claude/projects/-Users-raion-Downloads-dev-raion-aviation-hub/memory/`)
+  - 세션 간 맥락 → 홈 MEMORY 시스템 (`~/.claude/projects/-Users-raion-Downloads-dev-arum-aviation-hub/memory/`)
 
 ### 2.2 데이터 기반 답변
 - 실제 파일/코드/데이터를 확인한 후 답할 것.
@@ -43,6 +43,13 @@
 - **Tailwind 토큰 네임스페이스**: `arum.*` ([06 §2](docs/prd/06-ui-ux-spec.md)). `raion.*`는 v0.2 잔재로, 신규 코드에 사용 금지.
 - **도메인**: MVP는 `arumcargo.vercel.app` (무료). 500명 돌파 또는 첫 제휴 문의 수신 시 `arumcargo.com` 구매 검토 (OQ-B3 해결 조건).
 - **실명·회사명·학교명·직책 노출 금지**: About 페이지 포함 모든 공개 컨텐츠에서 작성자 개인정보 숨김. 드러낼 수 있는 사실은 "11년차 항공 화물 현직자"뿐.
+
+### 2.4 LLM Wiki (지식자산화 레이어, 2026-04-22 도입)
+- **3-레이어 구조**: `raw/` (사용자 큐레이션 원본, 불변) + `wiki/` (LLM 소유, 마크다운 지식베이스) + `wiki/schema.md` (LLM 운영 규율 SSOT).
+- **새 자료 흡수**: 사용자가 기사·자료를 공유하면 `/ingest` 슬래시 커맨드로 처리. 커맨드는 `wiki/schema.md` §5 워크플로우를 따름.
+- **페이지 타입**: `wiki/sources/` (자료별 요약) · `wiki/entities/` (고유명사) · `wiki/concepts/` (용어·개념). 모두 Obsidian wikilink로 상호 연결.
+- **관리자 도구**: Obsidian (그래프 뷰·Dataview) + `wiki/index.md` (카탈로그) + `wiki/log.md` (시간순 이벤트 로그).
+- **원리 참조**: [llm-wiki.ko.md](llm-wiki.ko.md) (Karpathy, 비공식 한국어 번역).
 
 ## 3. 언어·톤 규칙
 
@@ -165,4 +172,4 @@ ADMIN_EMAIL_WHITELIST=
 플랜 원본: `/Users/raion/.claude/plans/elegant-crafting-cocke.md`
 Phase 1 진입 플랜 (Cargo-First v3.0): `/Users/raion/.claude/plans/snuggly-humming-adleman.md`
 
-**프로젝트 경로**: `/Users/raion/Downloads/dev/raion-aviation-hub/` (2026-04-11 이전됨, 원래 `/Users/raion/dev/`)
+**프로젝트 경로**: `/Users/raion/Downloads/dev/arum-aviation-hub/` (2026-04-22 raion → arum 리네임, 2026-04-11 dev 디렉토리 이전, 원래 `/Users/raion/dev/raion-aviation-hub/`)
