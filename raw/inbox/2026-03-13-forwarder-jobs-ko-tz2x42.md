@@ -1,0 +1,15 @@
+---
+source_url: https://www.forwarder.kr/bbs/board.php?bo_table=menu6_2_2&wr_id=1776
+source_name: forwarder-jobs
+source_date: 2026-03-13
+captured_via: scraper
+tags: ["forwarder-jobs", "채용", "포워더"]
+---
+# 포트로직스 주식회사 — [판교역] 포워딩 오퍼레이터
+
+2026-03-13 게재 · 출처: https://www.forwarder.kr/
+
+## 출판사 제공 요약
+[판교역] 포워딩 오퍼레이터 / #포워더 #성남
+
+원문: https://www.forwarder.kr/bbs/board.php?bo_table=menu6_2_2&wr_id=1776
