@@ -37,13 +37,13 @@
 
 | ID | 이름 | 상태 | 핵심 JTBD | MVP 중요도 |
 |---|---|---|---|---|
-| **C1** ⭐ | **이지훈** | **3년차 콘솔사 영업·오퍼 (핀포인트)** | "출근길 5분, 11년차 현직자 시선으로 국내외 화물 뉴스 5건을 훑고 나답게 하루를 시작한다" | **★★★ Primary** |
-| C2 | 박서연 | 1년차 화물 신입 | "입사 직후 회사 교육만으론 안 보이는 업계 흐름을 매일 한 통 이메일로 학습한다" | ★★ Secondary |
-| C3 | 김태영 | 8년차 포워더 팀장 | "Loadstar 원서 대신 한글 3~4문장 요약으로 글로벌 운임·캐리어 동향을 받는다" | ★★ Secondary |
-| A1 | 정하늘 | 한서대 항공물류 4학년 | "취업 준비 중 신입 화물 공고 + 업계 감을 한 번에" | ★ Adjacent |
-| B1 | 최혜진 | 포워더 HR 6년차 | "지인 추천 외에 화물 직군 인재풀 채널을 확보한다" (Phase 5.5 `/employers`) | Phase 5.5 |
+| **A1** ⭐ | **정하늘** | **한서대 항공물류 4학년 (카고 취준, Primary)** | "카고 직군 공식 채용을 파편화 없이 확인하고, 업계 감을 취업 전에 습득한다" | **★★★ Primary** (ADR-009) |
+| **C1** | 이지훈 | 3년차 콘솔사 영업·오퍼 | "출근길 5분, 11년차 현직자 시선으로 국내외 화물 뉴스 5건을 훑고 나답게 하루를 시작한다" | **★★ Secondary** (ADR-009) |
+| C2 | 박서연 | 1년차 화물 신입 | "입사 직후 회사 교육만으론 안 보이는 업계 흐름을 매일 한 통 이메일로 학습한다" | ★ Tertiary |
+| C3 | 김태영 | 8년차 포워더 팀장 | "Loadstar 원서 대신 한글 3~4문장 요약으로 글로벌 운임·캐리어 동향을 받는다" | Adjacent |
+| B1 | 최혜진 | 포워더 HR 6년차 | "지인 추천 외에 화물 직군 인재풀 채널을 확보한다" | Phase 5.5 `/employers` |
 
-**디자인·카피 체크리스트**: 랜딩·각 주요 화면에서 **C1 이지훈**이 "출근길 5분 안에 가치를 체감"해야 한다. 모든 기능은 C1을 기준점으로 검증.
+**디자인·카피 체크리스트 (ADR-009 반영)**: 랜딩 Hero 의 Primary CTA 는 **A1 정하늘**이 "공식 카고 채용 필터 + 업계 입문 가치" 를 즉시 체감하도록 배치. `/jobs` 콘텐츠가 Hero 상단에 노출. 구독 CTA 는 Secondary. **C1 이지훈용 "출근길 5분"** 프레임은 이메일 다이제스트·`/news` 화면의 Primary 가치로 유지.
 
 **Non-user (비스코프)**: 승무원 취준생·지상직·조종사·정비사·항공 마니아 일반인 → Phase 7 "아름" 확장 시 재검토
 
@@ -240,7 +240,7 @@ flowchart LR
 - **DB**: Supabase (Postgres) — Auth는 `/admin/dashboard` Magic Link만 사용 (ADR-003 확장)
 - **Email**: **Loops.so 무료 티어 (2,000 contacts)** — 도메인 불필요 ([ADR-001](../adr/ADR-001-email-service-loops-over-resend.md))
 - **Cron**: Vercel Cron (다이제스트) + GitHub Actions (뉴스·채용 수집) 하이브리드 ([ADR-005](../adr/ADR-005-cron-hybrid-vercel-github.md))
-- **Translation (LLM)**: Provider-Agnostic 추상화 (`TRANSLATION_PROVIDER` env, MVP 기본 `openai`=GPT-4o-mini, `gemini`/`anthropic` swap 가능) ([ADR-007 Amendment 2026-04-18](../adr/ADR-007-translation-gpt-4o-mini.md), [SRS C-TEC-015](../srs/SRS-001-arum-cargo.md))
+- **Translation (LLM)**: Provider-Agnostic facade (`TRANSLATION_PROVIDER` env, **MVP 기본 `gemini` = Gemini 1.5 Flash 무료 티어**). `openai` / `anthropic` 은 Phase 5.5+ OQ-R17 실측 후 도입 (미구현 provider 지정 시 런타임 에러) ([ADR-007 Amended-2 2026-04-19](../adr/ADR-007-translation-gpt-4o-mini.md), [SRS Rev 1.0 C-TEC-015](../srs/SRS-001-arum-cargo.md))
 - **Analytics**: Vercel Analytics (무료 티어)
 - **Deploy**: Vercel, 도메인 `arumcargo.vercel.app`
 

@@ -1,7 +1,7 @@
-# ADR-007 — 번역 엔진: Provider-Agnostic 추상화 (MVP 기본 OpenAI GPT-4o-mini)
+# ADR-007 — 번역 엔진: Provider-Agnostic facade (MVP 기본 Gemini 1.5 Flash)
 
-- **Status**: **Amended 2026-04-18** — 원 결정은 OpenAI GPT-4o-mini 단일 고정이었으며, SRS-001 Rev 0.9.1 C-TEC-015에 따라 **Provider-Agnostic 추상화(`TRANSLATION_PROVIDER` env: `openai | gemini | anthropic`)**로 변경. Phase 5 MVP 기본값은 `openai=gpt-4o-mini` 유지. Phase 4 OQ-R17 A/B 테스트 후 확정
-- **Date**: 2026-04-11 (최초) · 2026-04-18 (Amended)
+- **Status**: **Amended-2 2026-04-19** — SRS-001 Rev 1.0 반영: MVP 기본값을 **`openai=gpt-4o-mini`** 에서 **`gemini=Gemini 1.5 Flash` (무료 티어)** 로 전환. 비용 모순 해소 (월 $5~7 → $0). facade 구조 유지, Gemini 어댑터 1종만 MVP 구현, `openai`/`anthropic` 은 Phase 5.5+ OQ-R17 실측 결과에 따라 도입 · 미구현 provider 지정 시 런타임 에러
+- **Date**: 2026-04-11 (최초) · 2026-04-18 (Amended, Provider-Agnostic) · 2026-04-19 (Amended-2, Gemini-only MVP)
 - **Owner**: Arum Cargo Founder
 - **Referenced by**: [prd/02-i-side-information.md §4](../prd/02-i-side-information.md), [prd/04-api-integration.md §4](../prd/04-api-integration.md), [SRS C-TEC-015](../srs/SRS-001-arum-cargo.md)
 - **Related**: [open-questions.md OQ-M1](../open-questions.md), [OQ-R17](../open-questions.md)

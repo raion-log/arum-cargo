@@ -12,7 +12,10 @@
 **항공 화물 업계 현직자가 매일 아침 정리해주는 업계 뉴스 + 채용 허브.**
 - Phase 1~5 MVP 브랜드: **아름 카고 (Arum Cargo)** — `arumcargo.vercel.app`
 - Phase 7 브랜드 확장: **아름 (Arum)** — 항공 생태계 전체(카고 하위 수직)
-- 타겟 핀포인트: **C1 이지훈 — 2~5년차 콘솔사/포워더 항공화물 영업·오퍼**
+- 타겟 우선순위 (ADR-009 2026-04-19 재정렬):
+  - **Primary ★★★**: **A1 정하늘 — 카고 취업 준비생** (공식 채용 허브 + 용어 툴팁 + 에디터 Pick 현장 맥락)
+  - Secondary ★★: C1 이지훈 — 2~5년차 콘솔사/포워더 항공화물 영업·오퍼 (뉴스 큐레이션 + 지인 추천 외 이직 경로)
+  - Tertiary ★: C2 박서연 — 1년차 카고 신입 (용어·업계 맥락 학습)
 - North Star: **WAU (Weekly Active Subscribers)** — Phase 5+ 종료 500명 · 4주 유지율 ≥ 40% (Reforge PMF)
 
 ## 2. 작업 원칙 (Working Discipline)
@@ -26,7 +29,7 @@
   - 프로젝트 규칙·컨벤션 → 이 `CLAUDE.md`
   - 결정 유보 항목 → `docs/open-questions.md`
   - 외부 자문가 Q&A → `docs/references/99-advisor-notes.md`
-  - 세션 간 맥락 → 홈 MEMORY 시스템 (`~/.claude/projects/-Users-raion-Downloads-dev-raion-aviation-hub/memory/`)
+  - 세션 간 맥락 → 홈 MEMORY 시스템 (`~/.claude/projects/-Users-raion-Downloads-dev-arum-aviation-hub/memory/`)
 
 ### 2.2 데이터 기반 답변
 - 실제 파일/코드/데이터를 확인한 후 답할 것.
@@ -40,6 +43,13 @@
 - **Tailwind 토큰 네임스페이스**: `arum.*` ([06 §2](docs/prd/06-ui-ux-spec.md)). `raion.*`는 v0.2 잔재로, 신규 코드에 사용 금지.
 - **도메인**: MVP는 `arumcargo.vercel.app` (무료). 500명 돌파 또는 첫 제휴 문의 수신 시 `arumcargo.com` 구매 검토 (OQ-B3 해결 조건).
 - **실명·회사명·학교명·직책 노출 금지**: About 페이지 포함 모든 공개 컨텐츠에서 작성자 개인정보 숨김. 드러낼 수 있는 사실은 "11년차 항공 화물 현직자"뿐.
+
+### 2.4 LLM Wiki (지식자산화 레이어, 2026-04-22 도입)
+- **3-레이어 구조**: `raw/` (사용자 큐레이션 원본, 불변) + `wiki/` (LLM 소유, 마크다운 지식베이스) + `wiki/schema.md` (LLM 운영 규율 SSOT).
+- **새 자료 흡수**: 사용자가 기사·자료를 공유하면 `/ingest` 슬래시 커맨드로 처리. 커맨드는 `wiki/schema.md` §5 워크플로우를 따름.
+- **페이지 타입**: `wiki/sources/` (자료별 요약) · `wiki/entities/` (고유명사) · `wiki/concepts/` (용어·개념). 모두 Obsidian wikilink로 상호 연결.
+- **관리자 도구**: Obsidian (그래프 뷰·Dataview) + `wiki/index.md` (카탈로그) + `wiki/log.md` (시간순 이벤트 로그).
+- **원리 참조**: [llm-wiki.ko.md](llm-wiki.ko.md) (Karpathy, 비공식 한국어 번역).
 
 ## 3. 언어·톤 규칙
 
@@ -65,7 +75,7 @@
 | DB + Auth | Supabase (Magic Link + `admin_users` 화이트리스트) | 무료 티어로 MVP |
 | 차트 (관리자 + 사용자 통합) | **shadcn/ui charts (Recharts 래퍼) 단일** | `/admin/dashboard` 8 KPI 카드 · `/news` 트렌드 · `/employers` 분포 모두 동일 라이브러리. SRS C-TEC-006 |
 | 이메일 | **Loops.so** (MVP 무료 티어, 공용 발송 `loops.email`) → Phase 5 이후 Resend + 자체 도메인 폴백 | Loops 2,000 contacts 무료·도메인 불필요. §50 준수 OQ-M6에서 검증 |
-| 번역 (LLM) | **Provider-Agnostic** (`TRANSLATION_PROVIDER` env, MVP 기본 `openai` = GPT-4o-mini). `gemini` / `anthropic` 어댑터 지원 | 월 예산 캡 $5 (`OPENAI_MONTHLY_BUDGET_CAP_USD`). SRS C-TEC-015 |
+| 번역 (LLM) | **Provider-Agnostic facade** (`TRANSLATION_PROVIDER` env). **MVP 기본 `gemini` (Gemini 1.5 Flash 무료 티어)** — Gemini 어댑터 1종만 구현. `openai` / `anthropic` 은 Phase 5.5+ OQ-R17 실측에 따라 도입 (미구현 provider 지정 시 런타임 에러) | 기본 Gemini 무료 (분당 15 req · 일 1,500 req). `openai` 선택 시만 월 $5 cap. SRS Rev 1.0 C-TEC-015 |
 | 배포 | Vercel Hobby (`arumcargo.vercel.app`) | 500명 또는 첫 제휴 문의 시 커스텀 도메인 검토 |
 | Analytics | Vercel Analytics | MUV·유입 경로 소스. 관리자 대시보드 API 통합 |
 
@@ -123,12 +133,14 @@ LOOPS_WEBHOOK_SECRET=       # Loops events webhook 서명 검증
 # Cron secret (Vercel Cron + GitHub Actions ingest 보호)
 CRON_SECRET=
 
-# Translation (LLM Provider-Agnostic, MVP 기본 openai = GPT-4o-mini)
-TRANSLATION_PROVIDER=openai          # openai | gemini | anthropic
-OPENAI_API_KEY=
-OPENAI_MONTHLY_BUDGET_CAP_USD=5
-# GOOGLE_GENERATIVE_AI_API_KEY=     # TRANSLATION_PROVIDER=gemini 사용 시
-# ANTHROPIC_API_KEY=                # TRANSLATION_PROVIDER=anthropic 사용 시
+# Translation (LLM Provider-Agnostic facade, MVP 기본 gemini = Gemini 1.5 Flash)
+TRANSLATION_PROVIDER=gemini          # gemini (MVP) | openai | anthropic (Phase 5.5+ 옵션)
+GOOGLE_GENERATIVE_AI_API_KEY=
+# (Phase 5.5+ 옵션, TRANSLATION_PROVIDER=openai 선택 시)
+# OPENAI_API_KEY=
+# OPENAI_MONTHLY_BUDGET_CAP_USD=5
+# (Phase 5.5+ 옵션, TRANSLATION_PROVIDER=anthropic 선택 시)
+# ANTHROPIC_API_KEY=
 
 # Vercel Analytics API (관리자 대시보드 MUV)
 VERCEL_API_TOKEN=
@@ -145,7 +157,9 @@ ADMIN_EMAIL_WHITELIST=
 - [x] Phase 0.5: 전략·사용자 분석 확장 (11~15)
 - [x] Phase 0.7: VPS + ADR 정제 (16-vps.md + ADR-001~007)
 - [x] **Phase 0.8: Cargo-First Pivot** (ADR-008 + 7 레퍼런스 v0.3 재작성)
-- [x] **Phase 1: PRD v0.3 전면 재작성** (`docs/prd/*.md` 9개) — 사용자 승인 대기
+- [x] **Phase 1: PRD v0.3 전면 재작성** (`docs/prd/*.md` 9개) — **사용자 승인 완료 (2026-04-18, D1~D6 체크리스트)**
+- [x] **Phase 1.5: SRS Rev 1.0 Baseline** (`docs/srs/SRS-001-arum-cargo.md`) — Gemini-only · 3 모순 해소 · Amendment Triggers 선언
+- [x] **Phase 1.6: Task 추출 프레임** (`docs/srs/tasks/` CHECKPOINTS·TASKS·phase-2 38/38 · review · learning-keywords)
 - [ ] Phase 2: Next.js 프로젝트 셋업 (`web/`) — `arum.*` 토큰·Supabase v0.3 마이그레이션
 - [ ] Phase 3: UI (Mock 데이터) — Bento + Parallax + Blob + 3D Carousel `/about` 하단
 - [ ] Phase 4: 외부 API 연동 — 카고 뉴스·채용 ingest
@@ -158,4 +172,4 @@ ADMIN_EMAIL_WHITELIST=
 플랜 원본: `/Users/raion/.claude/plans/elegant-crafting-cocke.md`
 Phase 1 진입 플랜 (Cargo-First v3.0): `/Users/raion/.claude/plans/snuggly-humming-adleman.md`
 
-**프로젝트 경로**: `/Users/raion/Downloads/dev/raion-aviation-hub/` (2026-04-11 이전됨, 원래 `/Users/raion/dev/`)
+**프로젝트 경로**: `/Users/raion/Downloads/dev/arum-aviation-hub/` (2026-04-22 raion → arum 리네임, 2026-04-11 dev 디렉토리 이전, 원래 `/Users/raion/dev/raion-aviation-hub/`)

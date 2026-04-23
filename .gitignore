@@ -49,6 +49,16 @@ supabase/.temp/
 # ---- Claude / local agent state ----
 .claude/
 # (단, 프로젝트 간 공통 Claude 지시는 홈 ~/.claude 에 있음. 로컬 세션 캐시만 제외)
+!.claude/commands/
+!.claude/commands/**
+
+# ---- Obsidian (Vault 설정) ----
+# 플러그인·테마·snippets 는 팀 공유 가치 → 추적
+# 로컬 UI 상태(workspace*) 만 제외
+.obsidian/workspace
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache
 
 # ---- Logs ----
 *.log
