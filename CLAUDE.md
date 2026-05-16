@@ -165,6 +165,15 @@ ADMIN_EMAIL_WHITELIST=
 - [x] **Phase 2: Next.js 프로젝트 셋업** (`arum-cargo-app/`) — shadcn/ui + `arum.*` 토큰 + DB 스키마(12테이블+RLS) + docs 3종 + ui-proto-plan v0.2
 - [x] **Phase 3: UI (Mock 데이터)** — 랜딩페이지 6섹션(Hero·Briefing·JobsPreview·WhyArum·Workflow·SocialProof) + Framer Motion + 파트너 마퀴 + 뉴스·채용 페이지 + about·privacy·terms·admin 페이지 — **Vercel 배포 완료 (`arumcargo-app.vercel.app`) 2026-05-14**
 - [ ] Phase 4: 외부 API 연동 — 카고 뉴스·채용 ingest ← **현재 단계**
+  - [x] 구독 폼 실제 동작 (`/api/subscribe` → Loops.so + Supabase) — 2026-05-16
+  - [x] 뉴스 ingest scaffold (`/api/news/ingest` — Naver API, 키 설정 필요)
+  - [x] 채용 ingest scaffold (`/api/jobs/ingest` — Saramin API, 키 설정 필요)
+  - [ ] Supabase 프로젝트 생성 + `.env.local` 키 입력
+  - [ ] Naver 개발자센터 API 키 발급 + 뉴스 ingest 실동작 확인
+  - [ ] Saramin API 키 발급 + 채용 ingest 실동작 확인
+  - [ ] 관리자 페이지에서 ingest 결과 승인(is_approved) 플로우
+- [ ] **[TODO] 랜딩페이지 첫 섹션(Hero) 재설계** — 현재 텍스트 기반 임시 버전. 브랜드 로고 완성 후 비주얼 전면 개편 필요
+- [ ] **[TODO] 브랜드 로고 제작** — Arum Cargo 워드마크 + 심볼 마크. 완성 후 헤더·파비콘·OG 이미지에 적용
 - [ ] Phase 5: Supabase + Loops.so + 관리자 shadcn/ui charts 대시보드 🏁 (아름 카고 MVP 완성)
 - [ ] Phase 5+: 운영 — WAU 500 달성
 - [ ] Phase 5.5: `/flights` + `/employers` + 기종 capacity 2단계 + `/contribute`
