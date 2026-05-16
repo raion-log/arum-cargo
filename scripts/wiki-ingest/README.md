@@ -31,12 +31,12 @@ Wiki 변환(entity/concept 추출)은 별도로 `/ingest` 슬래시 커맨드로
 
 ## 소스 현황
 
-| source | 방식 | 상태 | 메모 |
-|---|---|---|---|
-| cargonews.co.kr | RSS `/rss/allArticle.xml` | ✅ 안정 | 항공·해운·물류 전섹션 |
-| aircargonews.net | RSS `/feed/` (UA 스푸핑) | ✅ 안정 | WebFetch 로는 403, Node fetch 는 통과 |
-| cargopress.co.kr | HTML 카드 스크래핑 | ⚠️ 카드 셀렉터 의존 | 발행일자 없음 → 수집 시점 날짜로 기록 |
-| forwarder.kr (채용) | HTML 카드 스크래핑 | ⚠️ 셀렉터 의존 | MM-DD → YYYY-MM-DD 휴리스틱 |
+| source            | 방식                        | 상태           | 메모                               |
+| ----------------- | ------------------------- | ------------ | -------------------------------- |
+| cargonews.co.kr   | RSS `/rss/allArticle.xml` | ✅ 안정         | 항공·해운·물류 전섹션                     |
+| aircargonews.net  | RSS `/feed/` (UA 스푸핑)     | ✅ 안정         | WebFetch 로는 403, Node fetch 는 통과 |
+| cargopress.co.kr  | HTML 카드 스크래핑              | ⚠️ 카드 셀렉터 의존 | 발행일자 없음 → 수집 시점 날짜로 기록           |
+| forwarder.kr (채용) | HTML 카드 스크래핑              | ⚠️ 셀렉터 의존    | MM-DD → YYYY-MM-DD 휴리스틱          |
 
 ## 필터링 규칙
 

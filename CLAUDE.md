@@ -5,6 +5,8 @@
 
 **2026-04-11 Cargo-First Pivot**: 본 프로젝트는 ADR-008(`docs/references/ADR-008-pivot-to-cargo-first.md`)의 결정에 따라 승무원/지상직/조종사 중심 A-Side에서 **항공 화물 중심**으로 전면 피벗되었다. 모든 PRD는 v0.3으로 재작성됨.
 
+**2026-04-24 레포 분리**: 이 레포(`arum-aviation-hub`)는 **Workbase 전용** — docs/wiki/raw/SRS만 관리. SW 구현(Next.js)은 별도 레포 **`arum-cargo-app`** (`/Users/raion/Downloads/dev/arum-cargo-app/`)에서 진행. `web/` 디렉토리 계획 폐기.
+
 ---
 
 ## 1. 프로젝트 한 줄 요약
@@ -65,7 +67,7 @@
 
 | 레이어 | 선택 | 비고 |
 |---|---|---|
-| 프론트엔드 | Next.js 14 (App Router) + TypeScript | `web/` 디렉토리 |
+| 프론트엔드 | Next.js 14 (App Router) + TypeScript | `arum-cargo-app/` 별도 레포 |
 | 스타일 | Tailwind CSS (`arum.*` 토큰) + shadcn/ui | 컴포넌트는 shadcn 우선, 없으면 직접 작성 |
 | 폰트 | Pretendard Variable + Space Grotesk + JetBrains Mono | [06 §3](docs/prd/06-ui-ux-spec.md) |
 | 모션 | **Framer Motion + tailwindcss-animate + react-intersection-observer** | GSAP·Lenis·Lottie·상시 WebGL 금지. 2026-04-18 SRS-001 Rev 0.9.1 C-TEC-003 개정 |
@@ -160,9 +162,9 @@ ADMIN_EMAIL_WHITELIST=
 - [x] **Phase 1: PRD v0.3 전면 재작성** (`docs/prd/*.md` 9개) — **사용자 승인 완료 (2026-04-18, D1~D6 체크리스트)**
 - [x] **Phase 1.5: SRS Rev 1.0 Baseline** (`docs/srs/SRS-001-arum-cargo.md`) — Gemini-only · 3 모순 해소 · Amendment Triggers 선언
 - [x] **Phase 1.6: Task 추출 프레임** (`docs/srs/tasks/` CHECKPOINTS·TASKS·phase-2 38/38 · review · learning-keywords)
-- [ ] Phase 2: Next.js 프로젝트 셋업 (`web/`) — `arum.*` 토큰·Supabase v0.3 마이그레이션
-- [ ] Phase 3: UI (Mock 데이터) — Bento + Parallax + Blob + 3D Carousel `/about` 하단
-- [ ] Phase 4: 외부 API 연동 — 카고 뉴스·채용 ingest
+- [x] **Phase 2: Next.js 프로젝트 셋업** (`arum-cargo-app/`) — shadcn/ui + `arum.*` 토큰 + DB 스키마(12테이블+RLS) + docs 3종 + ui-proto-plan v0.2
+- [x] **Phase 3: UI (Mock 데이터)** — 랜딩페이지 6섹션(Hero·Briefing·JobsPreview·WhyArum·Workflow·SocialProof) + Framer Motion + 파트너 마퀴 + 뉴스·채용 페이지 + about·privacy·terms·admin 페이지 — **Vercel 배포 완료 (`arumcargo-app.vercel.app`) 2026-05-14**
+- [ ] Phase 4: 외부 API 연동 — 카고 뉴스·채용 ingest ← **현재 단계**
 - [ ] Phase 5: Supabase + Loops.so + 관리자 shadcn/ui charts 대시보드 🏁 (아름 카고 MVP 완성)
 - [ ] Phase 5+: 운영 — WAU 500 달성
 - [ ] Phase 5.5: `/flights` + `/employers` + 기종 capacity 2단계 + `/contribute`
